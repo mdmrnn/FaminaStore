@@ -1,0 +1,82 @@
+Header
+──────────────────────────────
+
+Hero Banner
+
+──────────────────────────────
+
+Categories
+┌────────────┬───────────────┐
+│ Women      │ Men           │
+│            ├───────────────┤
+│            │ Kids          │
+├────────────┤───────────────┤
+│ Accessories│ Sale          │
+└────────────┴───────────────┘
+
+──────────────────────────────
+
+Featured Products
+
+──────────────────────────────
+
+Services
+Free Shipping
+Support
+Money Back
+
+──────────────────────────────
+
+Footer
+
+
+$$$$$$$$$$$$$$$$$$$$$$$$$$4444Prompt for UI generation$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+Use the attached FaminaScarf mobile e-commerce UI as the base reference. 
+Do not redesign the brand from scratch and do not change the overall product category or Persian RTL structure.
+
+Redesign the interface with a refined feminine premium-economical style for a Persian women's scarf store.
+
+Main visual direction:
+- Replace the current beige and brown palette with a sophisticated deep forest green and muted gold palette.
+- Use #173C35 as the primary dark green.
+- Use #B8944E as a restrained muted gold accent.
+- Keep #FAF9F5 as the main background.
+- Use #E8EFEA for light green surfaces.
+- Keep the interface elegant, warm, minimal, modern, and suitable for young Iranian women.
+- Do not use excessive gold, gradients, glossy effects, or dark luxury styling.
+- Keep Persian RTL layout and Vazirmatn typography.
+
+Homepage requirements:
+- Preserve a clean and minimal homepage hierarchy.
+- Use one main hero section only.
+- Replace the three large category banners with a compact minimal category section.
+- Show categories as four small cards or a horizontally scrollable category row.
+- Prioritize products over decorative banners.
+- Use generous whitespace and consistent alignment.
+- Keep product cards simple, compact, and visually consistent.
+
+Product detail page:
+- Redesign it with a clear mobile-first hierarchy.
+- Place product gallery first, followed by product name, rating, price, color/material selection, stock status, and purchase button.
+- Add a sticky bottom “افزودن به سبد خرید” button on mobile.
+- Use collapsible sections for description, specifications, care instructions, shipping, and reviews.
+- Avoid clutter and excessive decorative elements.
+
+Checkout:
+- Make the purchase process as short as possible.
+- Use only three steps: cart, shipping information, payment.
+- Allow guest checkout.
+- Use phone number OTP only when necessary.
+- Keep the order summary visible and make the final purchase action prominent.
+
+Login page:
+- Make the login page more branded and visually appealing.
+- Add a tasteful scarf-related image or editorial visual.
+- Include the FaminaScarf logo, a friendly welcome message, phone number OTP login, and a “ادامه بدون ورود” option.
+- Keep the page elegant and simple, but not empty or generic.
+
+Generate a coherent UI system across all screens. 
+Preserve the Persian language, RTL alignment, product photography style, and the existing FaminaScarf identity.
+
+

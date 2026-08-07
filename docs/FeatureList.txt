@@ -1,0 +1,28 @@
+User
+	Login
+	Logout
+	OTP
+
+Profile
+	Product	
+	Search
+	Filter
+	Category
+	Favorite
+
+Order
+	Cart
+	Checkout
+	Payment
+	Invoice
+
+Admin
+	Add Product
+	Delete Product
+	Orders
+	Inventory
+
+Marketing
+	Coupon
+	SMS
+	Newsletter
