@@ -1,0 +1,149 @@
+You are a senior frontend developer working on a Vite + React + TypeScript project.
+
+Implement Redux Toolkit cart state management for the FaminaScarf e-commerce application.
+
+Generate ONLY the complete source code for exactly these two files:
+
+1. `src/store/cartSlice.ts`
+2. `src/store/store.ts`
+
+STRICT OUTPUT RULES:
+- Output only the two source files.
+- Clearly separate files with a simple file-path comment, for example:
+  // src/store/cartSlice.ts
+- Do not use markdown code fences.
+- Do not explain the code.
+- Do not generate or modify any other files.
+- Do not generate `main.tsx`, `App.tsx`, components, hooks, or UI code.
+- Do not include Redux Provider setup, because that will be connected separately.
+- Use TypeScript strictly. Do not use `any`.
+
+PROJECT CONTEXT:
+- Stack: Vite, React, TypeScript, Redux Toolkit.
+- Store name: FaminaScarf.
+- Products data and Product type already exist here:
+  `src/data/products.ts`
+- Import the Product type using:
+  `import type { Product } from "../data/products";`
+- Do NOT redefine the Product interface.
+
+EXISTING PRODUCT INTERFACE:
+```ts
+export interface Product {
+  id: number;
+  name: string;
+  price: number;
+  material: "ابریشم" | "نخی" | "وال اسلپ" | "ژاکارد";
+  rating: number;
+  reviewCount: number;
+  availability: boolean;
+  imageGallery: { id: number; label: string; src: string }[];
+}
+
+REQUIRED CART INTERFACE:
+interface CartItem {
+  product: Product;
+  quantity: number;
+}
+
+CART STATE REQUIREMENTS:
+
+Create and export a CartItem interface.
+Create an internal or exported CartState interface containing:
+  {
+items: CartItem[];
+  }
+  
+The state must persist in browser localStorage.
+Use this exact localStorage key:famina-scarf-cart
+On initial load, hydrate the cart state from localStorage.
+Handle absent, invalid, malformed, or corrupted localStorage data safely:
+Do not crash the application.
+Fall back to an empty cart: { items: [] }.
+Ensure browser-safety with a typeof window !== "undefined" check before accessing localStorage.
+Save the updated cart state back to localStorage after every dispatched cart action.
+Implement persistence cleanly in store.ts using store.subscribe(), not inside reducers.
+Do not use redux-persist or any additional package.
+REQUIRED REDUX ACTIONS:
+
+Create these exact reducers/actions in cartSlice.ts:
+
+addToCart
+Payload type: Product
+If the product is not already in the cart, add:
+ts
+{ product, quantity: 1 }
+
+If it already exists based on product.id, increase its quantity by 1.
+removeFromCart
+
+Payload type: number
+The payload is productId.
+Remove the item entirely from the cart.
+increaseQuantity
+
+Payload type: number
+The payload is productId.
+Increase that item’s quantity by 1.
+If no matching item exists, do nothing.
+decreaseQuantity
+
+Payload type: number
+The payload is productId.
+Decrease that item’s quantity by 1.
+If quantity becomes 0 after decreasing, remove that item entirely.
+If no matching item exists, do nothing.
+clearCart
+
+No payload.
+Empty the full cart.
+CART SLICE REQUIREMENTS:
+
+Slice name must be exactly: cart.
+Export these action creators as named exports:
+ts
+  export {
+addToCart,
+removeFromCart,
+increaseQuantity,
+decreaseQuantity,
+clearCart,
+  };
+  
+Export the cart reducer as the default export.
+Use createSlice from @reduxjs/toolkit.
+Use PayloadAction with correct payload types.
+Keep reducer code concise and readable.
+Use Immer-style mutation syntax provided by Redux Toolkit.
+STORE REQUIREMENTS:
+
+Configure the Redux store with:
+ts
+  cart: cartReducer
+  
+Export the configured store as a named export:
+ts
+  export const store = ...
+  
+Export these inferred TypeScript types:
+ts
+  export type RootState = ReturnType<typeof store.getState>;
+  export type AppDispatch = typeof store.dispatch;
+  
+Subscribe to store changes and persist only the cart slice state to localStorage using the key:famina-scarf-cart
+The saved localStorage value must have this shape:
+ts
+  {
+items: CartItem[]
+  }
+  
+Avoid localStorage writes when window is unavailable.
+QUALITY REQUIREMENTS:
+
+Use clean production-quality TypeScript.
+Keep cart behavior deterministic.
+Do not include console logs.
+Do not add selectors, async thunks, API logic, coupon logic, shipping logic, or price calculations.
+Do not add fields beyond items, product, and quantity.
+text
+

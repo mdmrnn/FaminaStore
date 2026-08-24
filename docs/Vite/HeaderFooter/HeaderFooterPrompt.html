@@ -1,0 +1,94 @@
+You are a senior frontend developer working on a Vite + React + TypeScript + Tailwind CSS project.
+
+Generate ONLY the complete source code for a single file named `MainLayout.tsx`.
+
+STRICT OUTPUT RULES:
+- Output only raw `MainLayout.tsx` code.
+- Do not use markdown code fences.
+- Do not explain the code.
+- Do not create or suggest any other files.
+- Do not generate `App.tsx`, `HomePage.tsx`, `tailwind.config.js`, or external CSS files.
+- Do not implement real routing or backend logic.
+
+PROJECT CONTEXT & REUSABILITY:
+- Stack: Vite, React, TypeScript, Tailwind CSS.
+- `lucide-react` is installed for all icons.
+- Persian `Vazirmatn` font is globally configured via `@font-face`.
+- Language: Persian, RTL (`dir="rtl"`).
+- Layout requirement: Full-width layout (`w-full`), responsive, mobile-first.
+- This file provides the persistent shell (Header, Navigation, Footer, Bottom Nav) for ALL pages in the app.
+- The component must accept `children: React.ReactNode` and render page content between Header and Footer.
+
+BRAND & DESIGN TOKENS (FaminaScarf UI Reference):
+- Background: #FAF9F5
+- Primary Deep Forest Green: #173C35
+- Muted Gold Accent: #B8944E
+- Light Green Accent: #E8EFEA
+- Dark Text / Primary: #222222
+- Secondary / Muted Text: #6D6D6D
+- Border: #E7E5DF
+- White / Cards: #FFFFFF
+- Use Tailwind arbitrary color classes directly (e.g., `bg-[#173C35]`, `text-[#B8944E]`, `border-[#E7E5DF]`).
+
+INTERACTIONS & BEHAVIOR:
+- Every interactive element (nav links, search, social icons, newsletter button, bottom bar tabs) must have an `onClick` handler calling a descriptive `console.log(...)`.
+- Add proper `aria-label` attributes to all icon-only buttons for accessibility.
+- Logo area should be an elegant text/SVG typographic treatment of "FaminaScarf" / "فامینا" with a subtle flower/leaf accent icon in gold (#B8944E).
+
+LAYOUT ARCHITECTURE (Inside `MainLayout.tsx`):
+
+1. TOP ANNOUNCEMENT BAR (Desktop only, hidden on small mobile):
+   - Background: #173C35, Text: #FFFFFF (small, refined).
+   - Text: "ارسال رایگان برای سفارش‌های بالای ۱,۵۰۰,۰۰۰ تومان"
+
+2. MAIN HEADER:
+   - Sticky top bar with subtle border-b (#E7E5DF) and blur/white background (`bg-white/95 backdrop-blur-md`).
+   - Mobile Header:
+     - Menu toggle (Menu icon) & Brand logo centered or right-aligned.
+     - Search, User profile, and Shopping bag icon buttons with notification badge.
+   - Desktop Header:
+     - Top row: Search input box with Search icon and placeholder "جستجو در محصولات...", Brand logo, and Action buttons (User Profile, Wishlist, Cart with count badge).
+     - Bottom row: Main navigation links:
+       - "خانه", "روسری", "شال", "اکسسوری", "پرفروش‌ترین‌ها", "تماس با ما", "درباره ما"
+       - Active/hover link styled with #173C35 and gold bottom accent indicator.
+
+3. PAGE CONTENT WRAPPER:
+   - `<main className="w-full min-h-screen bg-[#FAF9F5] pb-20 md:pb-0">{children}</main>`
+   - Notice `pb-20` on mobile so content is never obscured by the mobile bottom navigation.
+
+4. MOBILE BOTTOM NAVIGATION (Visible only on mobile/tablet `< md`):
+   - Fixed bottom bar (`fixed bottom-0 inset-x-0 bg-white border-t border-[#E7E5DF] z-50`).
+   - 5 equal-spaced tabs matching the reference UI:
+     1. "خانه" (Home icon) - active state in #173C35 with gold dot
+     2. "دسته‌بندی‌ها" (LayoutGrid icon)
+     3. "علاقه‌مندی‌ها" (Heart icon)
+     4. "سبد خرید" (ShoppingBag icon with badge)
+     5. "پروفایل" (User icon)
+   - Interactive with local state for active tab selection + `console.log(...)`.
+
+5. DESKTOP FOOTER (Hidden on mobile or simplified, full on desktop):
+   - Value Propositions Bar above footer:
+     - 4 features with Lucide icons in a clean row:
+       - "ارسال سریع (۲ تا ۳ روز کاری)"
+       - "پرداخت امن (درگاه بانکی معتبر)"
+       - "ضمانت بازگشت کالا (تا ۷ روز)"
+       - "پشتیبانی ۲۴/۷ (پاسخگوی شما هستیم)"
+   - Main Footer Grid (Deep forest green #173C35 background with white & gold text):
+     - Column 1 (Brand & About): FaminaScarf logo in gold, bio summary ("فامینااسکرف؛ انتخابی برای استایل خاص و تخفیفی که همیشه همراه شماست."), Social media icon buttons (Instagram, Telegram, WhatsApp).
+     - Column 2 (درباره ما): Links: "درباره فامینااسکرف", "چرا فامینااسکرف؟", "همکاری با ما", "فروشگاه حضوری", "مجله فامینااسکرف".
+     - Column 3 (دسترسی سریع): Links: "خانه", "دسته‌بندی محصولات", "جدیدها", "پرفروش‌ترین‌ها", "تماس با ما".
+     - Column 4 (راهنمای خرید): Links: "نحوه ثبت سفارش", "روش‌های پرداخت", "ارسال و تحویل", "بازگشت کالا", "سوالات متداول".
+     - Column 5 (Newsletter Subscription):
+       - Title: "عضویت در خبرنامه"
+       - Subtitle: "برای اطلاع از جدیدترین کالکشن‌ها و تخفیف‌ها"
+       - Input field for email/phone + "عضویت" button in muted gold (#B8944E).
+   - Bottom Copyright bar:
+     - "کلیه حقوق این وب‌سایت متعلق به فامینااسکرف می‌باشد."
+     - "Back to top" scroll-to-top circular button.
+
+CODE QUALITY:
+- Write clean, modern, fully typed TypeScript.
+- Define a clear interface `MainLayoutProps { children: React.ReactNode; }`.
+- Export default `MainLayout`.
+- Use semantic tags: `<header>`, `<nav>`, `<main>`, `<footer>`.
+- Ensure zero horizontal overflow and flawless RTL alignment.

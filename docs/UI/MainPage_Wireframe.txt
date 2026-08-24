@@ -30,7 +30,7 @@ Money Back
 Footer
 
 
-$$$$$$$$$$$$$$$$$$$$$$$$$$4444Prompt for UI generation$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+$$$$$$$$$$$$$$$$$$$$$$$$$$Prompt for UI generation$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 Use the attached FaminaScarf mobile e-commerce UI as the base reference. 
 Do not redesign the brand from scratch and do not change the overall product category or Persian RTL structure.

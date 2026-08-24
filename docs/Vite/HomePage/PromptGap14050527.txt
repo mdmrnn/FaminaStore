@@ -1,0 +1,207 @@
+You are a senior frontend developer working on a Vite + React + TypeScript + Tailwind CSS project.
+
+Generate ONLY the complete source code of one file: `HomePage.tsx`.
+
+STRICT OUTPUT RULES:
+- Output only raw `HomePage.tsx` code.
+- Do not use markdown code fences.
+- Do not explain the code.
+- Do not create or suggest any other files.
+- Do not generate `App.tsx`, `main.tsx`, `tailwind.config.js`, CSS files, components, hooks, API files, or backend code.
+- Do not include Header, Navbar, Footer, Cart page, Login page, Product page, Checkout page, or any sections outside the requested scope.
+
+PROJECT CONTEXT:
+- Stack: Vite, React, TypeScript, Tailwind CSS.
+- `lucide-react` is installed and can be used for icons.
+- The Persian Vazirmatn font is already loaded globally through `@font-face`; do NOT import Google Fonts or add font-face code.
+- UI language is Persian.
+- The whole page must be RTL using `dir="rtl"`.
+- Build mobile-first, then make it responsive for tablet and desktop.
+- The layout must be full width; do not use a narrow centered max-width container.
+- Avoid horizontal overflow on all mobile screen sizes.
+
+BRAND:
+- Brand name: FaminaScarf / فامینا
+- Store type: Iranian women’s scarves and accessories e-commerce store.
+- Audience: young and teen women in Tehran.
+- Design style: feminine, minimal, modern, elegant, premium but accessible.
+- Follow the visual direction of the provided FaminaScarf UI references, especially the mobile-first composition, spacing, card style, colors, and rounded image areas.
+
+COLOR SYSTEM:
+Use Tailwind arbitrary values directly. Do not expect Tailwind config changes.
+
+- Main background: #FAF9F5
+- Deep forest green / primary: #173C35
+- Muted gold accent: #B8944E
+- Light green accent: #E8EFEA
+- White: #FFFFFF
+- Primary text: #222222
+- Secondary text: #6D6D6D
+- Border color: #E7E5DF
+
+TYPOGRAPHY:
+- Use a Vazirmatn-compatible Tailwind class such as `font-[Vazirmatn]`, with a sans-serif fallback.
+- Use polished Persian typography with clear heading hierarchy.
+- Keep mobile text compact and readable.
+
+SCOPE — BUILD ONLY THESE THREE SECTIONS, IN THIS EXACT ORDER:
+1. Hero
+2. Category
+3. SpecialOffer
+
+Do not build any other page sections.
+
+IMAGE RULE:
+- Do NOT use real image URLs.
+- Do NOT use image imports.
+- Do NOT generate image assets.
+- Every image area must be a styled placeholder `div`.
+- Placeholders should look elegant and intentional, using #E8EFEA, #FAF9F5, light borders, rounded corners, and optionally subtle text: “محل تصویر”.
+- I will replace these placeholder boxes with real images later.
+
+INTERACTIONS:
+- Buttons should have `onClick` handlers.
+- Since routing is not requested, each `onClick` should use a simple placeholder action such as `console.log(...)`.
+- Do not implement real navigation, state management, cart logic, or API calls.
+- Add suitable accessible `aria-label` values to icon-only buttons.
+
+CODE ORGANIZATION:
+- Create and export a default React component named `HomePage`.
+- Keep all mock data, types, and UI logic inside this one file.
+- Define clean TypeScript interfaces/types for category and product data.
+- Render categories and products using `.map()`.
+- Import only the Lucide icons that are actually used.
+- Use semantic HTML sections where appropriate.
+- Keep the code clean, readable, production-quality, and easy to customize later.
+
+SECTION DETAILS:
+
+==================================================
+1) HERO SECTION
+==================================================
+
+Create a large elegant hero banner inspired by the provided FaminaScarf mobile and desktop reference designs.
+
+Layout:
+- Full width with responsive horizontal padding.
+- Large rounded card with a refined, calm visual composition.
+- On mobile, closely follow the reference style: text content and visual placeholder should feel balanced, compact, and premium.
+- On desktop, use a two-column layout:
+  - Text content on the right
+  - Large image placeholder on the left
+- Preserve RTL behavior.
+
+Hero content:
+- Eyebrow / small label: “کالکشن جدید”
+- Main title: “ظرافت در هر نگاه”
+- Supporting description: “استایلی بهاری، برای درخشیدن شما با فامینا”
+- Primary CTA button: “مشاهده کالکشن”
+- CTA should have forest green background (#173C35), white text, rounded styling, and a small left-facing arrow icon appropriate for RTL.
+- On click: `console.log("مشاهده کالکشن")`
+
+Visual placeholder:
+- Use a large decorative image placeholder with an elegant aspect ratio.
+- Rounded corners should match the premium soft UI style.
+- Use a very subtle abstract layered background made only with Tailwind divs and gradients if useful, but no images.
+- Include a small “محل تصویر” label inside the placeholder.
+- Do not make it visually busy.
+
+Carousel indicators:
+- Add four small dots near the bottom of the hero.
+- The active dot is muted gold (#B8944E).
+- The remaining dots are a soft neutral tone.
+- These dots can be visual only; no carousel functionality is required.
+
+==================================================
+2) CATEGORY SECTION
+==================================================
+
+Create a category browsing section below the hero.
+
+Section header:
+- Title: “دسته‌بندی محصولات”
+- Action text/button: “مشاهده همه”
+- Action onClick: `console.log("مشاهده همه دسته‌بندی‌ها")`
+- Use a simple arrow icon that matches RTL direction.
+
+Categories:
+Use an in-file typed mock-data array and render the following 4 categories:
+1. “روسری”
+2. “شال”
+3. “اکسسوری”
+4. “جدیدها”
+
+Design:
+- Each category has a relevant Lucide icon:
+  - روسری: Sparkles or CircleDot
+  - شال: Shirt or PanelsTopLeft
+  - اکسسوری: Gem or Heart
+  - جدیدها: Sparkles
+- Use clean rounded category cards with a light green or warm neutral background.
+- Include subtle border and refined spacing.
+- On mobile, show 4 compact, evenly spaced category cards in a single row if width allows. Use responsive sizing so it remains graceful on smaller devices.
+- On tablet and desktop, expand card width and spacing while preserving the minimal style.
+- Each category card should be clickable with an onClick:
+  `console.log("دسته‌بندی: [category name]")`
+
+==================================================
+3) SPECIAL OFFER SECTION
+==================================================
+
+Create a product showcase section titled “پیشنهاد ویژه”.
+
+Section header:
+- Title: “پیشنهاد ویژه”
+- Action text/button: “مشاهده همه”
+- Action onClick: `console.log("مشاهده همه پیشنهادها")`
+- Include a subtle appropriate RTL arrow icon.
+
+Products:
+Create a typed local mock-data array with these 4 products:
+1. Name: “روسری ابریشم مامی”
+   Price: “۵۰۰,۰۰۰ تومان”
+   Rating: “۴.۸”
+
+2. Name: “شال نخی پاییزه”
+   Price: “۳۹۰,۰۰۰ تومان”
+   Rating: “۴.۷”
+
+3. Name: “روسری ژاکارد”
+   Price: “۴۵۰,۰۰۰ تومان”
+   Rating: “۴.۹”
+
+4. Name: “روسری ابریشم دور دست‌دوز”
+   Price: “۶۵۰,۰۰۰ تومان”
+   Rating: “۴.۹”
+
+Product-card design:
+- White card with subtle border (#E7E5DF), soft shadow, and rounded corners.
+- Add a tasteful small hover effect for desktop, without breaking mobile usability.
+- Top area: image placeholder div with a consistent portrait/fashion-friendly aspect ratio.
+- Overlay a circular favorite/wishlist button on the image placeholder:
+  - Use Heart icon from lucide-react.
+  - `aria-label="افزودن به علاقه‌مندی‌ها"`
+  - onClick should call `console.log("افزودن به علاقه‌مندی‌ها: [product name]")`
+- Under the image:
+  - Product title
+  - Rating row with a small gold Star icon and rating number
+  - Persian product price
+- Add a compact circular add-to-cart button:
+  - Use ShoppingBag icon.
+  - Use forest green background and white icon.
+  - `aria-label="افزودن به سبد خرید"`
+  - onClick should call `console.log("افزودن به سبد خرید: [product name]")`
+
+Responsive grid:
+- Mobile: exactly 2 product columns.
+- Tablet: 3 columns if appropriate.
+- Desktop: exactly 4 columns.
+- Maintain clean consistent gaps and avoid horizontal scrolling.
+
+FINAL QUALITY CHECK:
+- The final page must feel visually coherent with FaminaScarf’s reference UI.
+- Use the specified colors consistently.
+- The page should look polished even though all image locations are placeholders.
+- Make it mobile-first, responsive, and RTL-correct.
+- Ensure all three sections are included: Hero, Category, SpecialOffer.
+- Ensure the output is ONLY the code of `HomePage.tsx`.
