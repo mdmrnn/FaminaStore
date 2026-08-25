@@ -12,7 +12,10 @@ import { toPersianDigits, formatPrice } from "../../utils/formatNumber";
 interface CartCardProp {
   item: CartItem;
 }
+
 export default function CartCard({ item }: CartCardProp) {
+  console.log("CartItem in CartCard:", JSON.stringify(item, null, 2));
+
   const dispatch = useDispatch();
 
   {
