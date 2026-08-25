@@ -10,9 +10,12 @@ const PORT = process.env.PORT || 5000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// Middleware
 app.use(cors());
 app.use(express.json());
 
+// Serve static assets from backend/public under the /public URL path
+app.use("/public", express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 app.get("/", (req, res) => {
@@ -22,11 +25,8 @@ app.get("/", (req, res) => {
   });
 });
 
-// در صورت قرار دادن تصاویر در backend/public/images
-app.use("/images", express.static("public/images"));
-
 /**
- * دریافت همه محصولات
+ * Get all products
  * GET: http://localhost:5000/api/products
  */
 app.get("/api/products", (req, res) => {

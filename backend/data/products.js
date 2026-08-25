@@ -8,14 +8,26 @@ export const products = [
     reviewCount: 24,
     availability: true,
     imageGallery: [
-      { id: 1, label: "تصویر اصلی", src: "/products/silk/mummy/IMG_6156.JPG" },
-      { id: 2, label: "نمای نزدیک", src: "/products/silk/mummy/IMG_6156.JPG" },
+      {
+        id: 1,
+        label: "تصویر اصلی",
+        src: "/public/products/silk/mummy/IMG_6156.JPG",
+      },
+      {
+        id: 2,
+        label: "نمای نزدیک",
+        src: "/public/products/silk/mummy/IMG_6156.JPG",
+      },
       {
         id: 3,
         label: "جزئیات محصول",
-        src: "/products/silk/mummy/IMG_6156.JPG",
+        src: "/public/products/silk/mummy/IMG_6156.JPG",
       },
-      { id: 4, label: "نمای کامل", src: "/products/silk/mummy/IMG_6156.JPG" },
+      {
+        id: 4,
+        label: "نمای کامل",
+        src: "/public/products/silk/mummy/IMG_6156.JPG",
+      },
     ],
   },
   {
@@ -27,14 +39,26 @@ export const products = [
     reviewCount: 24,
     availability: true,
     imageGallery: [
-      { id: 1, label: "تصویر اصلی", src: "/products/cotton/IMG_6192.JPG" },
-      { id: 2, label: "نمای نزدیک", src: "/products/cotton/IMG_6192.JPG" },
+      {
+        id: 1,
+        label: "تصویر اصلی",
+        src: "/public/products/cotton/IMG_6192.JPG",
+      },
+      {
+        id: 2,
+        label: "نمای نزدیک",
+        src: "/public/products/cotton/IMG_6192.JPG",
+      },
       {
         id: 3,
         label: "جزئیات محصول",
-        src: "/products/cotton/IMG_6192.JPG",
+        src: "/public/products/cotton/IMG_6192.JPG",
       },
-      { id: 4, label: "نمای کامل", src: "/products/cotton/IMG_6192.JPG" },
+      {
+        id: 4,
+        label: "نمای کامل",
+        src: "/public/products/cotton/IMG_6192.JPG",
+      },
     ],
   },
   {
@@ -46,14 +70,26 @@ export const products = [
     reviewCount: 24,
     availability: true,
     imageGallery: [
-      { id: 1, label: "تصویر اصلی", src: "/products/zhakard/IMG_6163.JPG" },
-      { id: 2, label: "نمای نزدیک", src: "/products/zhakard/IMG_6163.JPG" },
+      {
+        id: 1,
+        label: "تصویر اصلی",
+        src: "/public/products/zhakard/IMG_6163.JPG",
+      },
+      {
+        id: 2,
+        label: "نمای نزدیک",
+        src: "/public/products/zhakard/IMG_6163.JPG",
+      },
       {
         id: 3,
         label: "جزئیات محصول",
-        src: "/products/zhakard/IMG_6163.JPG",
+        src: "/public/products/zhakard/IMG_6163.JPG",
       },
-      { id: 4, label: "نمای کامل", src: "/products/zhakard/IMG_6163.JPG" },
+      {
+        id: 4,
+        label: "نمای کامل",
+        src: "/public/products/zhakard/IMG_6163.JPG",
+      },
     ],
   },
   {
@@ -65,14 +101,26 @@ export const products = [
     reviewCount: 24,
     availability: true,
     imageGallery: [
-      { id: 1, label: "تصویر اصلی", src: "/products/silk/silver/IMG_6153.JPG" },
-      { id: 2, label: "نمای نزدیک", src: "/products/silk/silver/IMG_6153.JPG" },
+      {
+        id: 1,
+        label: "تصویر اصلی",
+        src: "/public/products/silk/silver/IMG_6153.JPG",
+      },
+      {
+        id: 2,
+        label: "نمای نزدیک",
+        src: "/public/products/silk/silver/IMG_6153.JPG",
+      },
       {
         id: 3,
         label: "جزئیات محصول",
-        src: "/products/silk/silver/IMG_6153.JPG",
+        src: "/public/products/silk/silver/IMG_6153.JPG",
       },
-      { id: 4, label: "نمای کامل", src: "/products/silk/silver/IMG_6153.JPG" },
+      {
+        id: 4,
+        label: "نمای کامل",
+        src: "/public/products/silk/silver/IMG_6153.JPG",
+      },
     ],
   },
 ];
