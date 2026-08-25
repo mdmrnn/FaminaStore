@@ -6,7 +6,7 @@ import { useEffect } from "react";
 
 import { fetchProducts } from "../../store/productsSlice.ts";
 import type { AppDispatch, RootState } from "../../store/store.ts";
-import { toPersianDigits, formatPrice } from "../../utils/formatNumber.tsx";
+import { toPersianDigits, formatPrice } from "../../utils/formatNumber.ts";
 
 export default function SpecialOffers() {
   const navigate = useNavigate();
