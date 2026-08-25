@@ -1,8 +1,35 @@
-import { products } from "../data/products";
+// import { products } from "../data/products";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "../store/store";
+import { fetchProducts } from "../store/productsSlice";
+
 import ProductsHeader from "../features/products/ProductsHeader";
 import ProductCard from "../features/products/ProductCard";
 
 export default function ProductsPage() {
+  const dispatch = useDispatch<AppDispatch>();
+
+  const {
+    items: products,
+    loading,
+    error,
+  } = useSelector((state: RootState) => state.products);
+
+  useEffect(() => {
+    if (products.length === 0 && !loading) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch]);
+
+  if (loading) {
+    return <p>در حال دریافت محصولات از سرور...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <main
       dir="rtl"

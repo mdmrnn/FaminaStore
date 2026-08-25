@@ -2,7 +2,7 @@ import { Heart, ShoppingBag, Star } from "lucide-react";
 
 import { formatPrice, toPersianDigits } from "../../utils/formatNumber";
 import { useNavigate } from "react-router";
-import type { Product } from "../../data/products";
+import type { Product } from "../../types/product";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../../store/store";
 import { addToCart } from "../../store/cartSlice";

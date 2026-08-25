@@ -1,7 +1,8 @@
 import { Heart, Minus, Plus, ShoppingBag, Star } from "lucide-react";
-import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
-import type { RootState, AppDispatch } from "../../store/store";
+
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router";
+
 import {
   addToCart,
   increaseQuantity,
@@ -9,8 +10,8 @@ import {
 } from "../../store/cartSlice";
 import { formatPrice, toPersianDigits } from "../../utils/formatNumber";
 
-import type { Product } from "../../data/products";
-import { useNavigate } from "react-router";
+import type { RootState, AppDispatch } from "../../store/store";
+import type { Product } from "../../types/product";
 
 interface ProductDetailsDetailProps {
   product: Product;

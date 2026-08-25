@@ -1,6 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router";
-import { products } from "../data/products";
+import { useSelector, useDispatch } from "react-redux";
+
+import type { AppDispatch, RootState } from "../store/store";
+
+import { fetchProducts } from "../store/productsSlice";
 
 import ProductDetailsHeader from "../features/productDetails/ProductDetailsHeader";
 import ProductDetailsImageGallery from "../features/productDetails/ProductDetailsImageGallery";
@@ -10,6 +14,21 @@ export default function ProductDetailsPage() {
   const [isFavorite, setIsFavorite] = useState(false);
 
   const { id } = useParams<{ id: string }>();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const { items: products, loading } = useSelector(
+    (state: RootState) => state.products,
+  );
+
+  useEffect(() => {
+    if (products.length === 0 && !loading) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch]);
+
+  if (loading) {
+    return <p>در حال دریافت محصولات از سرور...</p>;
+  }
 
   const product = products.find((item) => item.id === Number(id));
 

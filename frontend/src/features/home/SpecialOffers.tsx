@@ -1,10 +1,37 @@
 import { ArrowLeft, Heart, ShoppingBag, Star } from "lucide-react";
-import { products } from "../../data/products.ts";
-import { toPersianDigits, formatPrice } from "../../utils/formatNumber.tsx";
+
 import { Link, useNavigate } from "react-router";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect } from "react";
+
+import { fetchProducts } from "../../store/productsSlice.ts";
+import type { AppDispatch, RootState } from "../../store/store.ts";
+import { toPersianDigits, formatPrice } from "../../utils/formatNumber.tsx";
 
 export default function SpecialOffers() {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+
+  const {
+    items: products,
+    loading,
+    error,
+  } = useSelector((state: RootState) => state.products);
+
+  useEffect(() => {
+    if (products.length === 0 && !loading) {
+      dispatch(fetchProducts());
+    }
+  }, [dispatch, products.length, loading]);
+
+  if (loading) {
+    return <p>در حال دریافت محصولات از سرور...</p>;
+  }
+
+  if (error) {
+    return <p>{error}</p>;
+  }
+
   return (
     <section className="w-full px-4 pb-10 pt-6 sm:px-6 sm:pb-14 sm:pt-8 lg:px-8 lg:pb-16 lg:pt-10">
       <div className="mb-5 flex items-center justify-between sm:mb-6">

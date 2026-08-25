@@ -1,7 +1,8 @@
 // src/store/store.ts
 import { configureStore } from "@reduxjs/toolkit";
-import type { Product } from "../data/products";
+import type { Product } from "../types/product";
 import cartReducer, { type CartState } from "./cartSlice";
+import productsReducer from "./productsSlice";
 
 const CART_STORAGE_KEY = "famina-scarf-cart";
 
@@ -96,6 +97,7 @@ const loadCartState = (): CartState => {
 export const store = configureStore({
   reducer: {
     cart: cartReducer,
+    products: productsReducer,
   },
   preloadedState: {
     cart: loadCartState(),
