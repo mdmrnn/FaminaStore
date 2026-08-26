@@ -24,7 +24,7 @@ export default function ProductDetailsPage() {
     if (products.length === 0 && !loading) {
       dispatch(fetchProducts());
     }
-  }, [dispatch]);
+  }, [dispatch, products.length, loading]);
 
   if (loading) {
     return <p>در حال دریافت محصولات از سرور...</p>;

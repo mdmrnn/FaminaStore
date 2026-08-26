@@ -1,5 +1,8 @@
 import { formatPrice } from "../../utils/formatNumber";
-import { FREE_SHIPPING_THRESHOLD, SHIPPING_FEE } from "../../data/constants";
+import {
+  FREE_SHIPPING_THRESHOLD,
+  SHIPPING_FEE,
+} from "../../constants/constants";
 
 interface CartAbstractCardProps {
   subtotal: number;

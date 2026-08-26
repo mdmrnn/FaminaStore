@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { categories } from "../../data/categories.ts";
+import { categories } from "../../data-test/categories.ts";
 import { Link } from "react-router";
 
 export default function Catogories() {
