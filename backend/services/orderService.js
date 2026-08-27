@@ -1,5 +1,5 @@
-import { createOrder } from "../data/orders.js";
-import { products } from "../data/products.js";
+import { insertOrder } from "../repositories/orderRepository.js";
+import { findProductById } from "../repositories/productRepository.js";
 import { calculateShippingCost } from "./shippingService.js";
 
 export function placeOrder({
@@ -9,7 +9,11 @@ export function placeOrder({
   paymentMethod,
 }) {
   const orderItems = items.map(({ productId, quantity }) => {
-    const product = products.find((candidate) => candidate.id === productId);
+    const product = findProductById(productId);
+
+    if (!product) {
+      throw new Error(`Product ${productId} was not found.`);
+    }
 
     return {
       productId: product.id,
@@ -39,7 +43,7 @@ export function placeOrder({
     createdAt: new Date().toISOString(),
   };
 
-  return createOrder(order);
+  return insertOrder(order);
 }
 
 function normalizeCustomer(customer) {

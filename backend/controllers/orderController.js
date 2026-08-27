@@ -12,7 +12,16 @@ export function createOrder(req, res) {
     });
   }
 
-  const order = placeOrder(validation.data);
+  let order;
+
+  try {
+    order = placeOrder(validation.data);
+  } catch {
+    return res.status(500).json({
+      success: false,
+      message: "ثبت سفارش با خطای داخلی مواجه شد.",
+    });
+  }
 
   return res.status(201).json({
     success: true,

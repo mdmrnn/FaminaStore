@@ -1,5 +1,5 @@
-import { products } from "../data/products.js";
+import { findAllProducts } from "../repositories/productRepository.js";
 
 export function getProducts(req, res) {
-  return res.status(200).json(products);
+  return res.status(200).json(findAllProducts());
 }

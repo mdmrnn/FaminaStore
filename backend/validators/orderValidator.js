@@ -1,4 +1,4 @@
-import { products } from "../data/products.js";
+import { findProductById } from "../repositories/productRepository.js";
 
 const validShippingMethods = ["post", "courier"];
 const validPaymentMethods = ["online"];
@@ -117,7 +117,7 @@ function validateItems(items) {
   for (const [index, item] of items.entries()) {
     const productId = item?.productId;
     const quantity = item?.quantity;
-    const product = products.find((candidate) => candidate.id === productId);
+    const product = findProductById(productId);
 
     if (!Number.isInteger(productId) || !product) {
       errors.push(`items[${index}].productId معتبر نیست.`);
