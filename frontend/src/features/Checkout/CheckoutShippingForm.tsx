@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { Check, Truck } from "lucide-react";
 import type { RootState } from "../../store/store";
 
 import type { CheckoutFormData } from "../../pages/CheckoutPage";
 import CheckoutProvinceCity from "./CheckoutProvinceCity";
 import { useSelector } from "react-redux";
+import { createOrder, type Order } from "../../services/orderApi";
 
 interface CheckoutShippingFormProps {
   formData: CheckoutFormData;
@@ -12,14 +14,17 @@ interface CheckoutShippingFormProps {
     value: CheckoutFormData[K],
   ) => void;
   setFormErrors: (err: string[]) => void;
+  onOrderCreated: (order: Order) => void;
 }
 
 export default function CheckoutShippingForm({
   formData,
   updateField,
   setFormErrors,
+  onOrderCreated,
 }: CheckoutShippingFormProps) {
   const items = useSelector((state: RootState) => state.cart.items);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const validateShippingForm = (): boolean => {
     const errors: string[] = [];
@@ -49,14 +54,41 @@ export default function CheckoutShippingForm({
     return errors.length === 0;
   };
 
-  const handleSubmitOrder = () => {
+  const handleSubmitOrder = async () => {
     if (!validateShippingForm()) {
       return;
     }
 
-    console.log("ادامه به پرداخت");
-    // setStep(2);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsSubmitting(true);
+
+    try {
+      const order = await createOrder({
+        customer: {
+          fullName: formData.fullName,
+          mobile: formData.mobile,
+          province: formData.province,
+          city: formData.city,
+          address: formData.address,
+          deliveryNote: formData.deliveryNote,
+        },
+        items: items.map((item) => ({
+          productId: item.product.id,
+          quantity: item.quantity,
+        })),
+        shippingMethod: formData.shippingMethod,
+        paymentMethod: formData.paymentMethod,
+      });
+
+      onOrderCreated(order);
+    } catch (error) {
+      setFormErrors([
+        error instanceof Error
+          ? error.message
+          : "ثبت سفارش با خطا مواجه شد.",
+      ]);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   if (items.length === 0) {
@@ -247,6 +279,8 @@ export default function CheckoutShippingForm({
       <button
         type="button"
         onClick={handleSubmitOrder}
+        disabled={isSubmitting}
+        aria-busy={isSubmitting}
         className="h-14 w-full rounded-2xl bg-[#173C35] px-4 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#122f2a] focus:outline-none focus:ring-2 focus:ring-[#B8944E] focus:ring-offset-2"
       >
         ادامه به پرداخت

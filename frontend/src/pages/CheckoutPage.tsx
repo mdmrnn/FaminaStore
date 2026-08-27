@@ -5,6 +5,8 @@ import type { RootState } from "../store/store";
 
 import CheckoutHeader from "../features/Checkout/CheckoutHeader";
 import CheckoutShippingForm from "../features/Checkout/CheckoutShippingForm";
+import type { Order } from "../services/orderApi";
+import { formatPrice } from "../utils/formatNumber";
 
 // type PaymentMethod = "online" | "cod";
 type PaymentMethod = "online";
@@ -29,6 +31,7 @@ export default function CheckoutPage() {
 
   const [step, setStep] = useState<1 | 2>(1);
   const [formErrors, setFormErrors] = useState<string[]>([]);
+  const [createdOrder, setCreatedOrder] = useState<Order | null>(null);
 
   const [formData, setFormData] = useState<CheckoutFormData>({
     fullName: "",
@@ -60,6 +63,13 @@ export default function CheckoutPage() {
     setFormErrors([]);
   };
 
+  const handleOrderCreated = (order: Order) => {
+    setCreatedOrder(order);
+    setFormErrors([]);
+    setStep(2);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <main
       dir="rtl"
@@ -81,11 +91,41 @@ export default function CheckoutPage() {
             ))}
           </div>
         )}
-        <CheckoutShippingForm
-          formData={formData}
-          updateField={updateField}
-          setFormErrors={setFormErrors}
-        />
+        {step === 1 ? (
+          <CheckoutShippingForm
+            formData={formData}
+            updateField={updateField}
+            setFormErrors={setFormErrors}
+            onOrderCreated={handleOrderCreated}
+          />
+        ) : (
+          createdOrder && (
+            <section className="rounded-3xl border border-[#E7E5DF] bg-white p-5 shadow-sm">
+              <h2 className="text-base font-bold text-[#173C35]">
+                سفارش آماده پرداخت است
+              </h2>
+              <p className="mt-2 text-xs leading-6 text-[#71717A]">
+                اطلاعات سفارش با موفقیت در Backend ثبت شد و می‌تواند برای
+                ساخت درخواست درگاه پرداخت استفاده شود.
+              </p>
+
+              <div className="mt-5 space-y-3 rounded-2xl bg-[#FAF9F5] p-4 text-xs">
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[#71717A]">شناسه سفارش</span>
+                  <span className="font-medium text-[#173C35]">
+                    {createdOrder.id}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-[#71717A]">مبلغ قابل پرداخت</span>
+                  <span className="font-bold text-[#173C35]">
+                    {formatPrice(createdOrder.total)} تومان
+                  </span>
+                </div>
+              </div>
+            </section>
+          )
+        )}
       </div>
     </main>
   );
