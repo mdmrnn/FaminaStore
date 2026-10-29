@@ -10,6 +10,7 @@ import CheckoutPage from "./pages/CheckoutPage";
 import MainLayout from "./layouts/MainLayout";
 import "./App.css";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
+import AdminPage from "./pages/AdminPage";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
+      <Route path="/admin" element={<AdminPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

@@ -3,8 +3,8 @@ import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
 
-import CheckoutHeader from "../features/Checkout/CheckoutHeader";
-import CheckoutShippingForm from "../features/Checkout/CheckoutShippingForm";
+import CheckoutHeader from "../features/checkout/CheckoutHeader";
+import CheckoutShippingForm from "../features/checkout/CheckoutShippingForm";
 import type { Order } from "../services/orderApi";
 import { formatPrice } from "../utils/formatNumber";
 
@@ -105,8 +105,8 @@ export default function CheckoutPage() {
                 سفارش آماده پرداخت است
               </h2>
               <p className="mt-2 text-xs leading-6 text-[#71717A]">
-                اطلاعات سفارش با موفقیت در Backend ثبت شد و می‌تواند برای
-                ساخت درخواست درگاه پرداخت استفاده شود.
+                اطلاعات سفارش با موفقیت در Backend ثبت شد و می‌تواند برای ساخت
+                درخواست درگاه پرداخت استفاده شود.
               </p>
 
               <div className="mt-5 space-y-3 rounded-2xl bg-[#FAF9F5] p-4 text-xs">

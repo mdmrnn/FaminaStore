@@ -12,6 +12,7 @@ export async function getProducts(): Promise<Product[]> {
   const data: Product[] = await response.json();
 
   // Normalize image URLs with API_BASE_URL and /public prefix if missing
+
   return data.map((product) => ({
     ...product,
     imageGallery: product.imageGallery.map((img) => ({

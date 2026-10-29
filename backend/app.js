@@ -3,6 +3,7 @@ import express from "express";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { initializeAppDatabase } from "./database/index.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 
@@ -13,6 +14,7 @@ const __dirname = path.dirname(__filename);
 initializeAppDatabase();
 
 app.use(cors());
+app.use("/api/products", productRoutes);
 app.use(express.json());
 
 app.use("/public", express.static(path.join(__dirname, "public")));
@@ -25,7 +27,7 @@ app.get("/", (req, res) => {
   });
 });
 
-app.use("/api/products", productRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/orders", orderRoutes);
 
 export default app;

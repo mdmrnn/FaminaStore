@@ -6,6 +6,11 @@ import { DatabaseSync } from "node:sqlite";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+const environmentFile = path.resolve(__dirname, "..", ".env");
+if (typeof process.loadEnvFile === "function" && fs.existsSync(environmentFile)) {
+  process.loadEnvFile(environmentFile);
+}
+
 const configuredDatabasePath = process.env.DATABASE_PATH;
 const databasePath = configuredDatabasePath
   ? path.resolve(process.cwd(), configuredDatabasePath)

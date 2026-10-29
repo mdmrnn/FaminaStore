@@ -49,6 +49,58 @@ export function findProductById(productId) {
   return mapProduct(product, images);
 }
 
+export function createProduct(product) {
+  db.exec("BEGIN IMMEDIATE");
+
+  try {
+    const now = new Date().toISOString();
+    const result = db
+      .prepare(`
+        INSERT INTO products (
+          name,
+          price,
+          material,
+          rating,
+          review_count,
+          availability,
+          created_at,
+          updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+      `)
+      .run(
+        product.name,
+        product.price,
+        product.material,
+        product.rating,
+        product.reviewCount,
+        product.availability ? 1 : 0,
+        now,
+        now,
+      );
+    const productId = Number(result.lastInsertRowid);
+    const insertImage = db.prepare(`
+      INSERT INTO product_images (
+        product_id,
+        image_id,
+        label,
+        src,
+        sort_order
+      ) VALUES (?, ?, ?, ?, ?)
+    `);
+
+    product.imageGallery.forEach((image, index) => {
+      insertImage.run(productId, index + 1, image.label, image.src, index);
+    });
+
+    const createdProduct = findProductById(productId);
+    db.exec("COMMIT");
+    return createdProduct;
+  } catch (error) {
+    db.exec("ROLLBACK");
+    throw error;
+  }
+}
+
 function groupImagesByProductId(imageRows) {
   const imagesByProductId = new Map();
 
