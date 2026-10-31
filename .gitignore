@@ -1,6 +1,9 @@
 # Node dependencies
 node_modules/
 
+#lucid
+lucide-main/
+
 # Local environment and runtime files
 .env
 .env.*

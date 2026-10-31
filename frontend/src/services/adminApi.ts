@@ -12,31 +12,6 @@ export interface AdminProductInput {
   imageGallery: { label: string; dataUrl: string }[];
 }
 
-export class AdminApiError extends Error {
-  status: number;
-
-  constructor(message: string, status: number) {
-    super(message);
-    this.name = "AdminApiError";
-    this.status = status;
-  }
-}
-
-async function readResponse<T>(response: Response): Promise<T> {
-  const data = (await response.json().catch(() => ({}))) as {
-    error?: string;
-  };
-
-  if (!response.ok) {
-    throw new AdminApiError(
-      data.error ?? "ارتباط با سرور انجام نشد.",
-      response.status,
-    );
-  }
-
-  return data as T;
-}
-
 export async function loginAdmin(
   username: string,
   password: string,
@@ -46,8 +21,23 @@ export async function loginAdmin(
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, password }),
   });
-  const result = await readResponse<{ token: string }>(response);
-  return result.token;
+  const data = (await response.json().catch(() => ({}))) as {
+    token?: string;
+    error?: string;
+    message?: string;
+  };
+
+  if (!response.ok) {
+    throw new Error(
+      data.error ?? data.message ?? "ارتباط با سرور انجام نشد.",
+    );
+  }
+
+  if (!data.token) {
+    throw new Error("توکن ورود از سرور دریافت نشد.");
+  }
+
+  return data.token;
 }
 
 export async function logoutAdmin(token: string): Promise<void> {
@@ -57,7 +47,14 @@ export async function logoutAdmin(token: string): Promise<void> {
   });
 
   if (!response.ok && response.status !== 401) {
-    await readResponse(response);
+    const data = (await response.json().catch(() => ({}))) as {
+      error?: string;
+      message?: string;
+    };
+
+    throw new Error(
+      data.error ?? data.message ?? "ارتباط با سرور انجام نشد.",
+    );
   }
 }
 
@@ -74,5 +71,21 @@ export async function createAdminProduct(
     body: JSON.stringify(product),
   });
 
-  return readResponse<Product>(response);
+  const data = (await response.json().catch(() => ({}))) as Product & {
+    error?: string;
+    message?: string;
+  };
+
+  if (!response.ok) {
+    const error = Object.assign(
+      new Error(
+        data.error ?? data.message ?? "ارتباط با سرور انجام نشد.",
+      ),
+      { status: response.status },
+    );
+
+    throw error;
+  }
+
+  return data;
 }

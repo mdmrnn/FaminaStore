@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from "react";
 import { useDispatch } from "react-redux";
-import { AdminApiError, createAdminProduct, loginAdmin, logoutAdmin } from "../services/adminApi";
+import { createAdminProduct, loginAdmin, logoutAdmin } from "../services/adminApi";
 import type { AppDispatch } from "../store/store";
 import { fetchProducts } from "../store/productsSlice";
 import type { Product } from "../types/product";
@@ -139,7 +139,10 @@ export default function AdminPage() {
       const fileInput = document.getElementById("product-images") as HTMLInputElement | null;
       if (fileInput) fileInput.value = "";
     } catch (createError) {
-      if (createError instanceof AdminApiError && createError.status === 401) {
+      if (
+        createError instanceof Error &&
+        (createError as Error & { status?: number }).status === 401
+      ) {
         window.sessionStorage.removeItem(sessionStorageKey);
         setToken("");
       }
