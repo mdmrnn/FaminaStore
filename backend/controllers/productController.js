@@ -1,5 +1,5 @@
 import {
-  createProduct as insertProduct,
+  insertProduct,
   findAllProducts,
 } from "../repositories/productRepository.js";
 import {
@@ -9,8 +9,9 @@ import {
 } from "../services/productImageService.js";
 import { validateProduct } from "../validators/productValidator.js";
 
-export function getProducts(req, res) {
-  return res.status(200).json(findAllProducts());
+export async function getProducts(req, res) {
+  const products = await findAllProducts();
+  return res.status(200).json(products);
 }
 
 export async function createProduct(req, res) {
@@ -24,19 +25,21 @@ export async function createProduct(req, res) {
   }
 
   const product = validation.data;
-
   let savedImages;
+
   try {
     savedImages = await saveProductImages(product.imageGallery);
   } catch (error) {
     if (error instanceof ProductImageValidationError) {
       return res.status(400).json({ error: error.message });
     }
-    return res.status(500).json({ error: "ذخیرهٔ تصاویر محصول انجام نشد." });
+
+    console.error("Product image upload failed:", error.message);
+    return res.status(500).json({ error: "ذخیره تصاویر محصول انجام نشد." });
   }
 
   try {
-    const createdProduct = insertProduct({
+    const createdProduct = await insertProduct({
       name: product.name,
       price: product.price,
       material: product.material,
@@ -47,8 +50,9 @@ export async function createProduct(req, res) {
     });
 
     return res.status(201).json(createdProduct);
-  } catch {
+  } catch (error) {
     await removeProductImages(savedImages.filePaths);
+    console.error("Product database insert failed:", error.message);
     return res
       .status(500)
       .json({ error: "ثبت محصول در پایگاه داده انجام نشد." });

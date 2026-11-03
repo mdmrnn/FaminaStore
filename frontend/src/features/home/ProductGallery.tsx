@@ -1,12 +1,11 @@
 import { useRef, useState } from "react";
-
-const API_BASE_URL = "http://localhost:5000";
+import { apiUrl } from "../../services/apiBase";
 
 const heroImages = [
-  `${API_BASE_URL}/public/products/hero/blk.JPG`,
-  `${API_BASE_URL}/public/products/hero/sun.JPG`,
-  `${API_BASE_URL}/public/products/hero/zhk.JPG`,
-  `${API_BASE_URL}/public/products/hero/watch.JPG`,
+  apiUrl("/public/products/hero/blk.JPG"),
+  apiUrl("/public/products/hero/sun.JPG"),
+  apiUrl("/public/products/hero/zhk.JPG"),
+  apiUrl("/public/products/hero/watch.JPG"),
 ];
 
 export default function ProductGallery() {

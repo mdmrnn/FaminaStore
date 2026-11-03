@@ -283,7 +283,7 @@ export default function CheckoutShippingForm({
         aria-busy={isSubmitting}
         className="h-14 w-full rounded-2xl bg-[#173C35] px-4 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#122f2a] focus:outline-none focus:ring-2 focus:ring-[#B8944E] focus:ring-offset-2"
       >
-        ادامه به پرداخت
+        ثبت سفارش
       </button>
     </section>
   );

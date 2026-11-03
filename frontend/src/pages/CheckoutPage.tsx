@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import type { RootState } from "../store/store";
+import type { AppDispatch } from "../store/store";
+import { clearCart } from "../store/cartSlice";
 
 import CheckoutHeader from "../features/checkout/CheckoutHeader";
 import CheckoutShippingForm from "../features/checkout/CheckoutShippingForm";
 import type { Order } from "../services/orderApi";
 import { formatPrice } from "../utils/formatNumber";
 
-// type PaymentMethod = "online" | "cod";
-type PaymentMethod = "online";
+type PaymentMethod = "manual";
 type ShippingMethod = "courier" | "post";
 
 export interface CheckoutFormData {
@@ -26,6 +27,7 @@ export interface CheckoutFormData {
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
 
   const items = useSelector((state: RootState) => state.cart.items);
 
@@ -41,15 +43,15 @@ export default function CheckoutPage() {
     address: "",
     deliveryNote: "",
     saveInformation: true,
-    paymentMethod: "online",
+    paymentMethod: "manual",
     shippingMethod: "post",
   });
 
   useEffect(() => {
-    if (items.length === 0) {
+    if (items.length === 0 && !createdOrder) {
       navigate("/cart", { replace: true });
     }
-  }, [items.length, navigate]);
+  }, [createdOrder, items.length, navigate]);
 
   const updateField = <K extends keyof CheckoutFormData>(
     field: K,
@@ -65,6 +67,7 @@ export default function CheckoutPage() {
 
   const handleOrderCreated = (order: Order) => {
     setCreatedOrder(order);
+    dispatch(clearCart());
     setFormErrors([]);
     setStep(2);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -80,6 +83,7 @@ export default function CheckoutPage() {
           step={step}
           setStep={setStep}
           setFormErrors={setFormErrors}
+          isOrderCreated={createdOrder !== null}
         />
         {formErrors.length > 0 && (
           <div
@@ -102,11 +106,11 @@ export default function CheckoutPage() {
           createdOrder && (
             <section className="rounded-3xl border border-[#E7E5DF] bg-white p-5 shadow-sm">
               <h2 className="text-base font-bold text-[#173C35]">
-                سفارش آماده پرداخت است
+                سفارش شما ثبت شد
               </h2>
               <p className="mt-2 text-xs leading-6 text-[#71717A]">
-                اطلاعات سفارش با موفقیت در Backend ثبت شد و می‌تواند برای ساخت
-                درخواست درگاه پرداخت استفاده شود.
+                ثبت سفارش شما انجام شد. پرداخت به‌صورت دستی و پس از تماس فروشگاه
+                هماهنگ می‌شود.
               </p>
 
               <div className="mt-5 space-y-3 rounded-2xl bg-[#FAF9F5] p-4 text-xs">

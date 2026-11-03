@@ -1,11 +1,9 @@
 import { randomUUID } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
+import { uploadsDirectory } from "../config/paths.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadDirectory = path.resolve(__dirname, "..", "uploads", "products");
+const uploadDirectory = path.join(uploadsDirectory, "products");
 const maxImages = 4;
 const maxImageBytes = 5 * 1024 * 1024;
 const maxTotalImageBytes = 10 * 1024 * 1024;

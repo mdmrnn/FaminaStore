@@ -1,26 +1,42 @@
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { DatabaseSync } from "node:sqlite";
+import pg from "pg";
+import "../config/env.js";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const { Pool } = pg;
 
-const environmentFile = path.resolve(__dirname, "..", ".env");
-if (typeof process.loadEnvFile === "function" && fs.existsSync(environmentFile)) {
-  process.loadEnvFile(environmentFile);
+const databaseUrl = process.env.DATABASE_URL;
+const requiredPgSettings = ["PGHOST", "PGDATABASE", "PGUSER", "PGPASSWORD"];
+
+if (
+  !databaseUrl &&
+  requiredPgSettings.some((setting) => !process.env[setting])
+) {
+  throw new Error(
+    "Configure DATABASE_URL or PGHOST, PGDATABASE, PGUSER, and PGPASSWORD before starting the API.",
+  );
 }
 
-const configuredDatabasePath = process.env.DATABASE_PATH;
-const databasePath = configuredDatabasePath
-  ? path.resolve(process.cwd(), configuredDatabasePath)
-  : path.join(__dirname, "famina.sqlite");
+const poolOptions = {
+  max: Number.parseInt(process.env.PGPOOL_MAX ?? "5", 10),
+  connectionTimeoutMillis: 5_000,
+  idleTimeoutMillis: 30_000,
+};
 
-fs.mkdirSync(path.dirname(databasePath), { recursive: true });
+if (databaseUrl) {
+  poolOptions.connectionString = databaseUrl;
+} else {
+  poolOptions.host = process.env.PGHOST;
+  poolOptions.port = Number.parseInt(process.env.PGPORT ?? "5432", 10);
+  poolOptions.database = process.env.PGDATABASE;
+  poolOptions.user = process.env.PGUSER;
+  poolOptions.password = process.env.PGPASSWORD;
+}
 
-export const db = new DatabaseSync(databasePath);
+if (process.env.DATABASE_SSL?.toLowerCase() === "true") {
+  poolOptions.ssl = { rejectUnauthorized: true };
+}
 
-db.exec(`
-  PRAGMA foreign_keys = ON;
-  PRAGMA journal_mode = WAL;
-`);
+export const db = new Pool(poolOptions);
+
+db.on("error", (error) => {
+  console.error("Unexpected PostgreSQL pool error:", error.message);
+});

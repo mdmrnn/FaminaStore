@@ -1,9 +1,8 @@
 import type { Product } from "../types/product";
-
-const API_BASE_URL = "http://localhost:5000";
+import { apiUrl } from "./apiBase";
 
 export async function getProducts(): Promise<Product[]> {
-  const response = await fetch(`${API_BASE_URL}/api/products`);
+  const response = await fetch(apiUrl("/api/products"));
 
   if (!response.ok) {
     throw new Error(`Failed to fetch products: ${response.statusText}`);
@@ -17,7 +16,7 @@ export async function getProducts(): Promise<Product[]> {
     ...product,
     imageGallery: product.imageGallery.map((img) => ({
       ...img,
-      src: `${API_BASE_URL}${img.src}`,
+      src: apiUrl(img.src),
     })),
   }));
 }

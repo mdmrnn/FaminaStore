@@ -46,8 +46,8 @@ const valuePropositions = [
   },
   {
     icon: ShieldCheck,
-    title: "پرداخت امن",
-    description: "درگاه بانکی معتبر",
+    title: "پرداخت با هماهنگی",
+    description: "پرداخت دستی پس از تأیید سفارش",
   },
   {
     icon: BadgeCheck,

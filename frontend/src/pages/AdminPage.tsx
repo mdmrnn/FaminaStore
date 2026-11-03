@@ -1,12 +1,22 @@
-import { useState, type ChangeEvent, type FormEvent } from "react";
+import { useState, type ChangeEvent, type SubmitEvent } from "react";
+import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { createAdminProduct, loginAdmin, logoutAdmin } from "../services/adminApi";
+import {
+  createAdminProduct,
+  loginAdmin,
+  logoutAdmin,
+} from "../services/adminApi";
 import type { AppDispatch } from "../store/store";
 import { fetchProducts } from "../store/productsSlice";
 import type { Product } from "../types/product";
 
 const sessionStorageKey = "famina-admin-token";
-const materials: Product["material"][] = ["ابریشم", "نخی", "وال اسلپ", "ژاکارد"];
+const materials: Product["material"][] = [
+  "ابریشم",
+  "نخی",
+  "وال اسلپ",
+  "ژاکارد",
+];
 const maxImageCount = 4;
 const maxImageSize = 5 * 1024 * 1024;
 const maxTotalImageSize = 10 * 1024 * 1024;
@@ -41,7 +51,7 @@ export default function AdminPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
 
-  async function handleLogin(event: FormEvent<HTMLFormElement>) {
+  async function handleLogin(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setBusy(true);
     setError("");
@@ -53,7 +63,9 @@ export default function AdminPage() {
       setPassword("");
     } catch (loginError) {
       setError(
-        loginError instanceof Error ? loginError.message : "ورود مدیر انجام نشد.",
+        loginError instanceof Error
+          ? loginError.message
+          : "ورود مدیر انجام نشد.",
       );
     } finally {
       setBusy(false);
@@ -77,16 +89,21 @@ export default function AdminPage() {
           file.size > maxImageSize,
       )
     ) {
-      setError("تصاویر باید JPEG، PNG یا WebP و هرکدام حداکثر ۵ مگابایت باشند.");
+      setError(
+        "تصاویر باید JPEG، PNG یا WebP و هرکدام حداکثر ۵ مگابایت باشند.",
+      );
       return;
     }
 
-    if (selectedImages.reduce((sum, file) => sum + file.size, 0) > maxTotalImageSize) {
+    if (
+      selectedImages.reduce((sum, file) => sum + file.size, 0) >
+      maxTotalImageSize
+    ) {
       setError("حجم کل تصاویر نمی‌تواند بیشتر از ۱۰ مگابایت باشد.");
     }
   }
 
-  async function handleCreateProduct(event: FormEvent<HTMLFormElement>) {
+  async function handleCreateProduct(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
     setError("");
     setNotice("");
@@ -128,7 +145,9 @@ export default function AdminPage() {
         imageGallery,
       });
 
-      setNotice(`محصول «${createdProduct.name}» ثبت شد و در فهرست فروشگاه قرار گرفت.`);
+      setNotice(
+        `محصول «${createdProduct.name}» ثبت شد و در فهرست فروشگاه قرار گرفت.`,
+      );
       dispatch(fetchProducts());
       setName("");
       setPrice("");
@@ -136,7 +155,9 @@ export default function AdminPage() {
       setReviewCount("0");
       setAvailability(true);
       setImages([]);
-      const fileInput = document.getElementById("product-images") as HTMLInputElement | null;
+      const fileInput = document.getElementById(
+        "product-images",
+      ) as HTMLInputElement | null;
       if (fileInput) fileInput.value = "";
     } catch (createError) {
       if (
@@ -178,27 +199,43 @@ export default function AdminPage() {
         <div className="mb-7 flex items-center justify-between gap-4">
           <div>
             <p className="text-sm text-[#6D6D6D]">فروشگاه فامینا</p>
-            <h1 className="mt-1 text-2xl font-semibold text-[#173C35]">پنل مدیریت</h1>
+            <h1 className="mt-1 text-2xl font-semibold text-[#173C35]">
+              پنل مدیریت
+            </h1>
           </div>
           {token && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              disabled={busy}
-              className="rounded-xl border border-[#E7E5DF] px-4 py-2 text-sm text-[#173C35] disabled:opacity-50"
-            >
-              خروج
-            </button>
+            <div className="flex items-center gap-2">
+              <Link
+                to="/admin/orders"
+                className="rounded-xl bg-[#E8EFEA] px-4 py-2 text-sm text-[#173C35]"
+              >
+                سفارش‌ها
+              </Link>
+              <button
+                type="button"
+                onClick={handleLogout}
+                disabled={busy}
+                className="rounded-xl border border-[#E7E5DF] px-4 py-2 text-sm text-[#173C35] disabled:opacity-50"
+              >
+                خروج
+              </button>
+            </div>
           )}
         </div>
 
         {error && (
-          <p role="alert" className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">
+          <p
+            role="alert"
+            className="mb-5 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700"
+          >
             {error}
           </p>
         )}
         {notice && (
-          <p role="status" className="mb-5 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800">
+          <p
+            role="status"
+            className="mb-5 rounded-xl bg-green-50 px-4 py-3 text-sm text-green-800"
+          >
             {notice}
           </p>
         )}
@@ -266,11 +303,15 @@ export default function AdminPage() {
                 <span>جنس</span>
                 <select
                   value={material}
-                  onChange={(event) => setMaterial(event.target.value as Product["material"])}
+                  onChange={(event) =>
+                    setMaterial(event.target.value as Product["material"])
+                  }
                   className="w-full rounded-xl border border-[#D8D6CF] bg-white px-4 py-3 outline-none focus:border-[#173C35]"
                 >
                   {materials.map((item) => (
-                    <option key={item} value={item}>{item}</option>
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
                   ))}
                 </select>
               </label>
@@ -323,7 +364,8 @@ export default function AdminPage() {
                 className="block w-full rounded-xl border border-[#D8D6CF] p-3 file:ml-3 file:rounded-lg file:border-0 file:bg-[#E8EFEA] file:px-3 file:py-2"
               />
               <span className="block text-xs text-[#6D6D6D]">
-                JPEG، PNG یا WebP؛ حداکثر ۵ مگابایت برای هر فایل و ۱۰ مگابایت در مجموع.
+                JPEG، PNG یا WebP؛ حداکثر ۵ مگابایت برای هر فایل و ۱۰ مگابایت در
+                مجموع.
               </span>
             </label>
 

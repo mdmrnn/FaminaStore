@@ -11,6 +11,7 @@ import MainLayout from "./layouts/MainLayout";
 import "./App.css";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import AdminPage from "./pages/AdminPage";
+import AdminOrdersPage from "./pages/AdminOrdersPage";
 
 export default function App() {
   return (
@@ -26,6 +27,7 @@ export default function App() {
         <Route path="/profile" element={<ProfilePage />} />
       </Route>
       <Route path="/admin" element={<AdminPage />} />
+      <Route path="/admin/orders" element={<AdminOrdersPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );

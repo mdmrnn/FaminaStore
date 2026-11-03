@@ -10,52 +10,53 @@ const productColumns = `
   availability
 `;
 
-export function findAllProducts() {
-  const productRows = db
-    .prepare(`SELECT ${productColumns} FROM products ORDER BY id`)
-    .all();
-  const imageRows = db
-    .prepare(`
+export async function findAllProducts() {
+  const [productResult, imageResult] = await Promise.all([
+    db.query(`SELECT ${productColumns} FROM products ORDER BY id`),
+    db.query(`
       SELECT product_id, image_id, label, src
       FROM product_images
       ORDER BY product_id, sort_order, image_id
-    `)
-    .all();
-  const imagesByProductId = groupImagesByProductId(imageRows);
+    `),
+  ]);
+  const imagesByProductId = groupImagesByProductId(imageResult.rows);
 
-  return productRows.map((product) =>
+  return productResult.rows.map((product) =>
     mapProduct(product, imagesByProductId.get(product.id) ?? []),
   );
 }
 
-export function findProductById(productId) {
-  const product = db
-    .prepare(`SELECT ${productColumns} FROM products WHERE id = ?`)
-    .get(productId);
+export async function findProductById(productId, queryable = db) {
+  const productResult = await queryable.query(
+    `SELECT ${productColumns} FROM products WHERE id = $1`,
+    [productId],
+  );
+  const product = productResult.rows[0];
 
   if (!product) {
     return null;
   }
 
-  const images = db
-    .prepare(`
+  const imageResult = await queryable.query(
+    `
       SELECT product_id, image_id, label, src
       FROM product_images
-      WHERE product_id = ?
+      WHERE product_id = $1
       ORDER BY sort_order, image_id
-    `)
-    .all(productId);
+    `,
+    [productId],
+  );
 
-  return mapProduct(product, images);
+  return mapProduct(product, imageResult.rows);
 }
 
-export function createProduct(product) {
-  db.exec("BEGIN IMMEDIATE");
+export async function insertProduct(product) {
+  const client = await db.connect();
 
   try {
-    const now = new Date().toISOString();
-    const result = db
-      .prepare(`
+    await client.query("BEGIN");
+    const result = await client.query(
+      `
         INSERT INTO products (
           name,
           price,
@@ -65,39 +66,43 @@ export function createProduct(product) {
           availability,
           created_at,
           updated_at
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-      `)
-      .run(
+        ) VALUES ($1, $2, $3, $4, $5, $6, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)
+        RETURNING id
+      `,
+      [
         product.name,
         product.price,
         product.material,
         product.rating,
         product.reviewCount,
-        product.availability ? 1 : 0,
-        now,
-        now,
+        product.availability,
+      ],
+    );
+    const productId = result.rows[0].id;
+
+    for (const [index, image] of product.imageGallery.entries()) {
+      await client.query(
+        `
+          INSERT INTO product_images (
+            product_id,
+            image_id,
+            label,
+            src,
+            sort_order
+          ) VALUES ($1, $2, $3, $4, $5)
+        `,
+        [productId, image.id, image.label, image.src, index],
       );
-    const productId = Number(result.lastInsertRowid);
-    const insertImage = db.prepare(`
-      INSERT INTO product_images (
-        product_id,
-        image_id,
-        label,
-        src,
-        sort_order
-      ) VALUES (?, ?, ?, ?, ?)
-    `);
+    }
 
-    product.imageGallery.forEach((image, index) => {
-      insertImage.run(productId, index + 1, image.label, image.src, index);
-    });
-
-    const createdProduct = findProductById(productId);
-    db.exec("COMMIT");
+    const createdProduct = await findProductById(productId, client);
+    await client.query("COMMIT");
     return createdProduct;
   } catch (error) {
-    db.exec("ROLLBACK");
+    await client.query("ROLLBACK").catch(() => {});
     throw error;
+  } finally {
+    client.release();
   }
 }
 
@@ -117,15 +122,25 @@ function mapProduct(product, images) {
   return {
     id: product.id,
     name: product.name,
-    price: product.price,
+    price: toSafeInteger(product.price, "Product price"),
     material: product.material,
     rating: product.rating,
     reviewCount: product.review_count,
-    availability: Boolean(product.availability),
+    availability: product.availability,
     imageGallery: images.map((image) => ({
       id: image.image_id,
       label: image.label,
       src: image.src,
     })),
   };
+}
+
+function toSafeInteger(value, label) {
+  const number = Number(value);
+
+  if (!Number.isSafeInteger(number)) {
+    throw new Error(`${label} is outside the safe integer range.`);
+  }
+
+  return number;
 }

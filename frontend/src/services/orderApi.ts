@@ -1,8 +1,9 @@
-const API_BASE_URL = "http://localhost:5000";
-const ORDERS_ENDPOINT = `${API_BASE_URL}/api/orders`;
+import { apiUrl } from "./apiBase";
+
+const ORDERS_ENDPOINT = apiUrl("/api/orders");
 
 export type ShippingMethod = "post" | "courier";
-export type PaymentMethod = "online";
+export type PaymentMethod = "manual";
 
 export interface CreateOrderRequest {
   customer: {
@@ -35,6 +36,7 @@ export interface Order {
   items: OrderItem[];
   shippingMethod: ShippingMethod;
   paymentMethod: PaymentMethod;
+  paymentStatus: "unpaid" | "paid";
   subtotal: number;
   shippingCost: number;
   total: number;
@@ -122,6 +124,8 @@ function isCreateOrderResponse(
     typeof order.subtotal === "number" &&
     typeof order.shippingCost === "number" &&
     typeof order.total === "number" &&
+    order.paymentMethod === "manual" &&
+    (order.paymentStatus === "unpaid" || order.paymentStatus === "paid") &&
     typeof order.status === "string" &&
     typeof order.createdAt === "string"
   );

@@ -1,14 +1,16 @@
 import { findProductById } from "../repositories/productRepository.js";
 
 const validShippingMethods = ["post", "courier"];
-const validPaymentMethods = ["online"];
+const validPaymentMethods = ["manual"];
+const maxOrderItems = 50;
+const maxQuantityPerItem = 100;
 
-export function validateOrderRequest(payload) {
+export async function validateOrderRequest(payload) {
   const {
     customer,
     items,
     shippingMethod = "post",
-    paymentMethod = "online",
+    paymentMethod = "manual",
   } = payload;
 
   const customerErrors = validateCustomer(customer);
@@ -28,7 +30,15 @@ export function validateOrderRequest(payload) {
     };
   }
 
-  const itemErrors = validateItems(items);
+  if (items.length > maxOrderItems) {
+    return {
+      valid: false,
+      message: `هر سفارش حداکثر می‌تواند ${maxOrderItems} محصول داشته باشد.`,
+      errors: ["تعداد محصولات سفارش بیش از حد مجاز است."],
+    };
+  }
+
+  const itemErrors = await validateItems(items);
   if (itemErrors.length > 0) {
     return {
       valid: false,
@@ -49,7 +59,7 @@ export function validateOrderRequest(payload) {
     return {
       valid: false,
       message: "روش پرداخت معتبر نیست.",
-      errors: ["paymentMethod فعلاً باید online باشد."],
+      errors: ["روش پرداخت فعلاً باید manual باشد."],
     };
   }
 
@@ -67,15 +77,16 @@ export function validateOrderRequest(payload) {
 function validateCustomer(customer) {
   const errors = [];
 
-  if (!customer || typeof customer !== "object") {
+  if (!customer || typeof customer !== "object" || Array.isArray(customer)) {
     return ["customer الزامی است."];
   }
 
   if (
     typeof customer.fullName !== "string" ||
-    customer.fullName.trim().length < 2
+    customer.fullName.trim().length < 2 ||
+    customer.fullName.trim().length > 120
   ) {
-    errors.push("نام و نام خانوادگی الزامی است.");
+    errors.push("نام و نام خانوادگی باید بین ۲ تا ۱۲۰ نویسه باشد.");
   }
 
   if (
@@ -88,46 +99,58 @@ function validateCustomer(customer) {
   for (const field of ["province", "city"]) {
     if (
       typeof customer[field] !== "string" ||
-      customer[field].trim().length === 0
+      customer[field].trim().length === 0 ||
+      customer[field].trim().length > 100
     ) {
-      errors.push(`${field} الزامی است.`);
+      errors.push(`${field} الزامی است و باید حداکثر ۱۰۰ نویسه باشد.`);
     }
   }
 
   if (
     typeof customer.address !== "string" ||
-    customer.address.trim().length < 10
+    customer.address.trim().length < 10 ||
+    customer.address.trim().length > 500
   ) {
-    errors.push("آدرس باید حداقل ۱۰ کاراکتر باشد.");
+    errors.push("آدرس باید بین ۱۰ تا ۵۰۰ نویسه باشد.");
   }
 
   if (
     customer.deliveryNote !== undefined &&
-    typeof customer.deliveryNote !== "string"
+    (typeof customer.deliveryNote !== "string" ||
+      customer.deliveryNote.trim().length > 500)
   ) {
-    errors.push("deliveryNote باید متن باشد.");
+    errors.push("یادداشت ارسال باید حداکثر ۵۰۰ نویسه باشد.");
   }
 
   return errors;
 }
 
-function validateItems(items) {
+async function validateItems(items) {
   const errors = [];
 
   for (const [index, item] of items.entries()) {
     const productId = item?.productId;
     const quantity = item?.quantity;
-    const product = findProductById(productId);
 
-    if (!Number.isInteger(productId) || !product) {
+    if (!Number.isSafeInteger(productId) || productId < 1) {
       errors.push(`items[${index}].productId معتبر نیست.`);
       continue;
     }
 
-    if (!Number.isInteger(quantity) || quantity < 1) {
+    if (
+      !Number.isSafeInteger(quantity) ||
+      quantity < 1 ||
+      quantity > maxQuantityPerItem
+    ) {
       errors.push(
-        `items[${index}].quantity باید عدد صحیح بزرگ‌تر از صفر باشد.`,
+        `تعداد هر محصول باید عدد صحیحی بین ۱ تا ${maxQuantityPerItem} باشد.`,
       );
+      continue;
+    }
+
+    const product = await findProductById(productId);
+    if (!product) {
+      errors.push(`محصول ${productId} معتبر نیست.`);
       continue;
     }
 

@@ -6,17 +6,23 @@ interface CheckoutHeaderProps {
   step: number;
   setStep: (num: 1 | 2) => void;
   setFormErrors: (error: string[]) => void;
+  isOrderCreated: boolean;
 }
 
 export default function CheckoutHeader({
   step,
   setStep,
   setFormErrors,
+  isOrderCreated,
 }: CheckoutHeaderProps) {
   const navigate = useNavigate();
 
   const handleBack = () => {
     if (step === 2) {
+      if (isOrderCreated) {
+        navigate("/products");
+        return;
+      }
       setStep(1);
       setFormErrors([]);
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -37,7 +43,7 @@ export default function CheckoutHeader({
           <ArrowRight size={19} strokeWidth={1.8} />
         </button>
         <h1 className="text-lg font-bold text-[#173C35]">
-          {step === 1 ? "اطلاعات ارسال" : "پرداخت"}
+          {step === 1 ? "اطلاعات ارسال" : "ثبت سفارش"}
         </h1>
       </div>
 
@@ -97,7 +103,7 @@ export default function CheckoutHeader({
               step === 2 ? "font-medium text-[#173C35]" : "text-[#8A8A8E]"
             }`}
           >
-            پرداخت و ثبت
+            ثبت سفارش
           </span>
         </div>
       </div>
