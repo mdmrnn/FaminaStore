@@ -1,6 +1,6 @@
 const FREE_SHIPPING_THRESHOLD = 10_000_000;
 const SHIPPING_COSTS = {
-  post: 100_000,
+  post: 300_000,
   courier: 400_000,
 };
 

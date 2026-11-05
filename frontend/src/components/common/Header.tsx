@@ -10,12 +10,13 @@ import {
 import { useSelector } from "react-redux";
 
 import { useState } from "react";
-import { toPersianDigits } from "../../utils/formatNumber";
+import { formatPrice, toPersianDigits } from "../../utils/formatNumber";
 import type { RootState } from "../../store/store";
 
 import BrandLogo from "../../features/header/BrandLogo";
 import IconButton from "../../features/header/IconButton";
 import { Link, NavLink } from "react-router";
+import { FREE_SHIPPING_THRESHOLD } from "../../constants/constants";
 
 interface NavItem {
   label: string;
@@ -47,7 +48,8 @@ export default function Header() {
   return (
     <header className="w-full">
       <div className="hidden h-9 items-center justify-center bg-[#173C35] px-4 text-xs font-medium text-white sm:flex">
-        ارسال رایگان برای سفارش‌های بالای ۱,۵۰۰,۰۰۰ تومان
+        ارسال رایگان برای سفارش‌های بالای {formatPrice(FREE_SHIPPING_THRESHOLD)}{" "}
+        تومان
       </div>
 
       <div className="sticky top-0 z-40 w-full border-b border-[#E7E5DF] bg-white/95 backdrop-blur-md">

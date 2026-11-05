@@ -1,4 +1,5 @@
 import { findProductById } from "../repositories/productRepository.js";
+import { normalizeMobileDigits } from "../utils/normalizeMobileDigits.js";
 
 const validShippingMethods = ["post", "courier"];
 const validPaymentMethods = ["manual"];
@@ -91,7 +92,7 @@ function validateCustomer(customer) {
 
   if (
     typeof customer.mobile !== "string" ||
-    !/^09\d{9}$/.test(customer.mobile.replace(/\s/g, ""))
+    !/^09\d{9}$/.test(normalizeMobileDigits(customer.mobile))
   ) {
     errors.push("شماره موبایل معتبر نیست.");
   }

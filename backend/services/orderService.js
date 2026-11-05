@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { insertOrder } from "../repositories/orderRepository.js";
 import { findProductById } from "../repositories/productRepository.js";
+import { normalizeMobileDigits } from "../utils/normalizeMobileDigits.js";
 import { calculateShippingCost } from "./shippingService.js";
 
 export async function placeOrder({
@@ -67,7 +68,7 @@ export async function placeOrder({
 function normalizeCustomer(customer) {
   return {
     fullName: customer.fullName.trim(),
-    mobile: customer.mobile.replace(/\s/g, ""),
+    mobile: normalizeMobileDigits(customer.mobile),
     province: customer.province.trim(),
     city: customer.city.trim(),
     address: customer.address.trim(),

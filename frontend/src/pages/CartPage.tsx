@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 
 import { useNavigate } from "react-router-dom";
@@ -7,7 +6,6 @@ import { clearCart } from "../store/cartSlice";
 import CartHeader from "../features/cart/CartHeader";
 import CartCard from "../features/cart/CartCard";
 import EmptyCart from "../features/cart/EmptyCart";
-import CartDiscountCard from "../features/cart/CartDiscountCard";
 import CartAbstractCard from "../features/cart/CartAbstractCard";
 
 export default function CartPage() {
@@ -15,8 +13,6 @@ export default function CartPage() {
   const dispatch = useDispatch<AppDispatch>();
 
   const items = useSelector((state: RootState) => state.cart.items);
-
-  const [appliedDiscount, setAppliedDiscount] = useState(0);
 
   const subtotal = items.reduce(
     (total, item) => total + item.product.price * item.quantity,
@@ -61,15 +57,17 @@ export default function CartPage() {
               </button>
             </div>
 
+            {/* موقتاً غیرفعال تا اعتبارسنجی کد تخفیف در سرور پیاده‌سازی شود.
             <CartDiscountCard
               setAppliedDiscount={setAppliedDiscount}
               subtotal={subtotal}
               appliedDiscount={appliedDiscount}
             />
+            */}
 
             <CartAbstractCard
               subtotal={subtotal}
-              appliedDiscount={appliedDiscount}
+              appliedDiscount={0}
             />
 
             <button

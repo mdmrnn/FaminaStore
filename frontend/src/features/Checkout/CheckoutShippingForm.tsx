@@ -6,6 +6,7 @@ import type { CheckoutFormData } from "../../pages/CheckoutPage";
 import CheckoutProvinceCity from "./CheckoutProvinceCity";
 import { useSelector } from "react-redux";
 import { createOrder, type Order } from "../../services/orderApi";
+import { normalizeMobileDigits } from "../../utils/normalizeMobileDigits";
 
 interface CheckoutShippingFormProps {
   formData: CheckoutFormData;
@@ -33,7 +34,7 @@ export default function CheckoutShippingForm({
       errors.push("نام و نام خانوادگی را وارد کنید.");
     }
 
-    if (!/^09\d{9}$/.test(formData.mobile.replace(/\s/g, ""))) {
+    if (!/^09\d{9}$/.test(normalizeMobileDigits(formData.mobile))) {
       errors.push("شماره موبایل معتبر وارد کنید.");
     }
 
@@ -65,7 +66,7 @@ export default function CheckoutShippingForm({
       const order = await createOrder({
         customer: {
           fullName: formData.fullName,
-          mobile: formData.mobile,
+          mobile: normalizeMobileDigits(formData.mobile),
           province: formData.province,
           city: formData.city,
           address: formData.address,

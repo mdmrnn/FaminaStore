@@ -5,8 +5,8 @@ import type { RootState } from "../store/store";
 import type { AppDispatch } from "../store/store";
 import { clearCart } from "../store/cartSlice";
 
-import CheckoutHeader from "../features/checkout/CheckoutHeader";
-import CheckoutShippingForm from "../features/checkout/CheckoutShippingForm";
+import CheckoutHeader from "../features/Checkout/CheckoutHeader";
+import CheckoutShippingForm from "../features/Checkout/CheckoutShippingForm";
 import type { Order } from "../services/orderApi";
 import { formatPrice } from "../utils/formatNumber";
 
