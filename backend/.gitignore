@@ -4,6 +4,9 @@ node_modules/
 #lucid
 lucide-main/
 
+#build
+build/
+
 # Local environment and runtime files
 .env
 .env.*
@@ -14,8 +17,8 @@ yarn-debug.log*
 pnpm-debug.log*
 
 # Local uploads
-backend/uploads/*
-!backend/uploads/.gitkeep
+uploads/*
+!uploads/.gitkeep
 
 
 # Logs
