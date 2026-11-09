@@ -120,3 +120,23 @@ export async function saveProductImages(imageGallery) {
 export async function removeProductImages(filePaths) {
   await Promise.allSettled(filePaths.map((filePath) => fs.unlink(filePath)));
 }
+
+export async function removeUploadedProductImages(imageGallery) {
+  const filenamePattern =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}\.(jpg|png|webp)$/i;
+  const uploadPrefix = "/uploads/products/";
+  const filePaths = imageGallery.flatMap((image) => {
+    if (typeof image.src !== "string" || !image.src.startsWith(uploadPrefix)) {
+      return [];
+    }
+
+    const filename = image.src.slice(uploadPrefix.length);
+    if (!filenamePattern.test(filename)) {
+      return [];
+    }
+
+    return [path.join(uploadDirectory, filename)];
+  });
+
+  await removeProductImages(filePaths);
+}

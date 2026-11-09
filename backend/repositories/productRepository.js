@@ -106,6 +106,131 @@ export async function insertProduct(product) {
   }
 }
 
+export async function updateProduct(productId, product) {
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const lockResult = await client.query(
+      "SELECT id FROM products WHERE id = $1 FOR UPDATE",
+      [productId],
+    );
+
+    if (lockResult.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const existingProduct = await findProductById(productId, client);
+    const updateResult = await client.query(
+      `
+        UPDATE products
+        SET
+          name = $1,
+          price = $2,
+          material = $3,
+          rating = $4,
+          review_count = $5,
+          availability = $6,
+          updated_at = CURRENT_TIMESTAMP
+        WHERE id = $7
+        RETURNING id
+      `,
+      [
+        product.name,
+        product.price,
+        product.material,
+        product.rating,
+        product.reviewCount,
+        product.availability,
+        productId,
+      ],
+    );
+
+    if (updateResult.rowCount !== 1) {
+      throw new Error(`Product ${productId} could not be updated.`);
+    }
+
+    const replacesImageGallery = Object.hasOwn(product, "imageGallery");
+    if (replacesImageGallery) {
+      if (!Array.isArray(product.imageGallery) || product.imageGallery.length === 0) {
+        throw new Error("A replacement image gallery must contain at least one image.");
+      }
+
+      await client.query("DELETE FROM product_images WHERE product_id = $1", [
+        productId,
+      ]);
+
+      for (const [index, image] of product.imageGallery.entries()) {
+        await client.query(
+          `
+            INSERT INTO product_images (
+              product_id,
+              image_id,
+              label,
+              src,
+              sort_order
+            ) VALUES ($1, $2, $3, $4, $5)
+          `,
+          [productId, image.id, image.label, image.src, index],
+        );
+      }
+    }
+
+    const updatedProduct = await findProductById(productId, client);
+    await client.query("COMMIT");
+
+    return {
+      product: updatedProduct,
+      replacedImageGallery: replacesImageGallery
+        ? existingProduct.imageGallery
+        : [],
+    };
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function deleteProduct(productId) {
+  const client = await db.connect();
+
+  try {
+    await client.query("BEGIN");
+
+    const lockResult = await client.query(
+      "SELECT id FROM products WHERE id = $1 FOR UPDATE",
+      [productId],
+    );
+
+    if (lockResult.rowCount === 0) {
+      await client.query("ROLLBACK");
+      return null;
+    }
+
+    const deletedProduct = await findProductById(productId, client);
+    const deleteResult = await client.query(
+      "DELETE FROM products WHERE id = $1",
+      [productId],
+    );
+
+    if (deleteResult.rowCount !== 1) {
+      throw new Error(`Product ${productId} could not be deleted.`);
+    }
+
+    await client.query("COMMIT");
+    return deletedProduct;
+  } catch (error) {
+    await client.query("ROLLBACK").catch(() => {});
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
 function groupImagesByProductId(imageRows) {
   const imagesByProductId = new Map();
 

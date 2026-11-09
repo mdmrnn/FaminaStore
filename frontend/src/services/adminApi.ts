@@ -19,8 +19,12 @@ export interface AdminProductInput {
   rating: number;
   reviewCount: number;
   availability: boolean;
-  imageGallery: { label: string; dataUrl: string }[];
+  imageGallery?: { label: string; dataUrl: string }[];
 }
+
+export type NewAdminProductInput = AdminProductInput & {
+  imageGallery: { label: string; dataUrl: string }[];
+};
 
 export async function loginAdmin(
   username: string,
@@ -70,7 +74,7 @@ export async function logoutAdmin(token: string): Promise<void> {
 
 export async function createAdminProduct(
   token: string,
-  product: AdminProductInput,
+  product: NewAdminProductInput,
 ): Promise<Product> {
   const response = await fetch(apiUrl("/api/products"), {
     method: "POST",
@@ -98,6 +102,49 @@ export async function createAdminProduct(
   }
 
   return data;
+}
+
+export async function updateAdminProduct(
+  token: string,
+  productId: number,
+  product: AdminProductInput,
+): Promise<Product> {
+  const response = await fetch(
+    apiUrl(`/api/products/${encodeURIComponent(productId)}`),
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(product),
+    },
+  );
+  const data = await readJsonResponse(response);
+
+  if (!response.ok) {
+    throw responseError(data, response.status);
+  }
+
+  return data as Product;
+}
+
+export async function deleteAdminProduct(
+  token: string,
+  productId: number,
+): Promise<void> {
+  const response = await fetch(
+    apiUrl(`/api/products/${encodeURIComponent(productId)}`),
+    {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    },
+  );
+  const data = await readJsonResponse(response);
+
+  if (!response.ok) {
+    throw responseError(data, response.status);
+  }
 }
 
 export async function getAdminOrders(token: string): Promise<AdminOrder[]> {

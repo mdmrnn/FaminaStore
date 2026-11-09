@@ -5,7 +5,11 @@ import type { RootState } from "../../store/store";
 import type { CheckoutFormData } from "../../pages/CheckoutPage";
 import CheckoutProvinceCity from "./CheckoutProvinceCity";
 import { useSelector } from "react-redux";
-import { createOrder, type Order } from "../../services/orderApi";
+import {
+  createOrder,
+  startOrderPayment,
+  type Order,
+} from "../../services/orderApi";
 import { normalizeMobileDigits } from "../../utils/normalizeMobileDigits";
 
 interface CheckoutShippingFormProps {
@@ -15,13 +19,15 @@ interface CheckoutShippingFormProps {
     value: CheckoutFormData[K],
   ) => void;
   setFormErrors: (err: string[]) => void;
-  onOrderCreated: (order: Order) => void;
+  zarinpalEnabled: boolean;
+  onOrderCreated: (order: Order, paymentError?: string) => void;
 }
 
 export default function CheckoutShippingForm({
   formData,
   updateField,
   setFormErrors,
+  zarinpalEnabled,
   onOrderCreated,
 }: CheckoutShippingFormProps) {
   const items = useSelector((state: RootState) => state.cart.items);
@@ -79,6 +85,21 @@ export default function CheckoutShippingForm({
         shippingMethod: formData.shippingMethod,
         paymentMethod: formData.paymentMethod,
       });
+
+      if (order.paymentMethod === "zarinpal") {
+        try {
+          const redirectUrl = await startOrderPayment(order.id);
+          window.location.assign(redirectUrl);
+        } catch (error) {
+          onOrderCreated(
+            order,
+            error instanceof Error
+              ? error.message
+              : "شروع پرداخت انجام نشد. می‌توانید دوباره تلاش کنید.",
+          );
+        }
+        return;
+      }
 
       onOrderCreated(order);
     } catch (error) {
@@ -277,6 +298,63 @@ export default function CheckoutShippingForm({
         </div>
       </div>
 
+      <div className="rounded-3xl border border-[#E7E5DF] bg-white p-4 shadow-sm sm:p-5">
+        <h2 className="mb-4 text-sm font-bold text-[#173C35]">روش پرداخت</h2>
+        <div className="space-y-2.5">
+          <label
+            className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors ${
+              formData.paymentMethod === "manual"
+                ? "border-[#173C35] bg-[#E8EFEA]"
+                : "border-[#E7E5DF] bg-white"
+            }`}
+          >
+            <input
+              type="radio"
+              name="paymentMethod"
+              value="manual"
+              checked={formData.paymentMethod === "manual"}
+              onChange={() => updateField("paymentMethod", "manual")}
+              className="accent-[#173C35]"
+            />
+            <span>
+              <span className="block text-xs font-medium text-[#222222]">
+                پرداخت دستی
+              </span>
+              <span className="mt-1 block text-[10px] text-[#8A8A8E]">
+                هماهنگی پرداخت پس از ثبت سفارش
+              </span>
+            </span>
+          </label>
+
+          {zarinpalEnabled && (
+            <label
+              className={`flex cursor-pointer items-center gap-3 rounded-2xl border p-3 transition-colors ${
+                formData.paymentMethod === "zarinpal"
+                  ? "border-[#173C35] bg-[#E8EFEA]"
+                  : "border-[#E7E5DF] bg-white"
+              }`}
+            >
+              <input
+                type="radio"
+                name="paymentMethod"
+                value="zarinpal"
+                checked={formData.paymentMethod === "zarinpal"}
+                onChange={() => updateField("paymentMethod", "zarinpal")}
+                className="accent-[#173C35]"
+              />
+              <span>
+                <span className="block text-xs font-medium text-[#222222]">
+                  پرداخت آنلاین با زرین‌پال
+                </span>
+                <span className="mt-1 block text-[10px] text-[#8A8A8E]">
+                  انتقال به صفحهٔ امن پرداخت
+                </span>
+              </span>
+            </label>
+          )}
+        </div>
+      </div>
+
       <button
         type="button"
         onClick={handleSubmitOrder}
@@ -284,7 +362,9 @@ export default function CheckoutShippingForm({
         aria-busy={isSubmitting}
         className="h-14 w-full rounded-2xl bg-[#173C35] px-4 text-sm font-semibold text-white shadow-md transition-all hover:bg-[#122f2a] focus:outline-none focus:ring-2 focus:ring-[#B8944E] focus:ring-offset-2"
       >
-        ثبت سفارش
+        {formData.paymentMethod === "zarinpal"
+          ? "ثبت سفارش و پرداخت آنلاین"
+          : "ثبت سفارش"}
       </button>
     </section>
   );

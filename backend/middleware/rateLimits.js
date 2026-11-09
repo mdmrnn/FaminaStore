@@ -16,3 +16,11 @@ export const createOrderLimiter = rateLimit({
   legacyHeaders: false,
   message: { error: "تعداد ثبت سفارش در این بازه بیش از حد مجاز است." },
 });
+
+export const paymentLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: "تعداد تلاش‌های پرداخت در این بازه بیش از حد مجاز است." },
+});

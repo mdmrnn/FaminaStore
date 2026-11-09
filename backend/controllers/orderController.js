@@ -1,4 +1,10 @@
 import { placeOrder } from "../services/orderService.js";
+import {
+  getOrderPaymentSummary,
+  PaymentFlowError,
+  startZarinpalPayment,
+  verifyOrderPayment,
+} from "../services/zarinpalPaymentService.js";
 import { validateOrderRequest } from "../validators/orderValidator.js";
 
 export async function createOrder(req, res) {
@@ -27,4 +33,61 @@ export async function createOrder(req, res) {
       message: "ثبت سفارش با خطای داخلی مواجه شد.",
     });
   }
+}
+
+export async function createZarinpalPayment(req, res) {
+  try {
+    const payment = await startZarinpalPayment(req.params.orderId);
+
+    return res.status(200).json({
+      success: true,
+      payment,
+    });
+  } catch (error) {
+    return handlePaymentError(res, error, "Payment start failed:");
+  }
+}
+
+export async function getOrderPayment(req, res) {
+  try {
+    const payment = await getOrderPaymentSummary(req.params.orderId);
+
+    if (!payment) {
+      return res.status(404).json({
+        success: false,
+        message: "سفارش پیدا نشد.",
+      });
+    }
+
+    return res.status(200).json({ success: true, payment });
+  } catch (error) {
+    return handlePaymentError(res, error, "Payment status lookup failed:");
+  }
+}
+
+export async function verifyOrderPaymentController(req, res) {
+  try {
+    const payment = await verifyOrderPayment(req.params.orderId);
+
+    return res.status(200).json({ success: true, payment });
+  } catch (error) {
+    return handlePaymentError(res, error, "Payment verification retry failed:");
+  }
+}
+
+function handlePaymentError(res, error, logPrefix) {
+  const statusCode =
+    error instanceof PaymentFlowError ? error.statusCode : 500;
+
+  if (statusCode >= 500) {
+    console.error(logPrefix, error.message);
+  }
+
+  return res.status(statusCode).json({
+    success: false,
+    message:
+      statusCode < 500
+        ? error.message
+        : "پرداخت در حال حاضر قابل انجام یا بررسی نیست. کمی بعد دوباره تلاش کنید.",
+  });
 }

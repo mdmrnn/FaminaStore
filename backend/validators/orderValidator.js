@@ -1,8 +1,9 @@
 import { findProductById } from "../repositories/productRepository.js";
 import { normalizeMobileDigits } from "../utils/normalizeMobileDigits.js";
+import { zarinpalConfig } from "../config/payment.js";
 
 const validShippingMethods = ["post", "courier"];
-const validPaymentMethods = ["manual"];
+const validPaymentMethods = ["manual", ...(zarinpalConfig.enabled ? ["zarinpal"] : [])];
 const maxOrderItems = 50;
 const maxQuantityPerItem = 100;
 
@@ -59,8 +60,8 @@ export async function validateOrderRequest(payload) {
   if (!validPaymentMethods.includes(paymentMethod)) {
     return {
       valid: false,
-      message: "روش پرداخت معتبر نیست.",
-      errors: ["روش پرداخت فعلاً باید manual باشد."],
+      message: "روش پرداخت معتبر یا فعال نیست.",
+      errors: ["روش پرداخت باید manual باشد یا درگاه آنلاین فعال باشد."],
     };
   }
 

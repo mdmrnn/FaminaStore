@@ -7,6 +7,7 @@ import { fileURLToPath } from "node:url";
 import { uploadsDirectory } from "./config/paths.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
+import paymentRoutes from "./routes/paymentRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
 
 const app = express();
@@ -47,13 +48,14 @@ app.use(
     origin(origin, callback) {
       callback(null, !origin || allowedOrigins.has(origin));
     },
-    methods: ["GET", "POST", "PATCH", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
     maxAge: 600,
   }),
 );
 
 app.use("/api/products", productRoutes);
+app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", express.json({ limit: "16kb" }), adminRoutes);
 app.use(
   "/api/orders",
