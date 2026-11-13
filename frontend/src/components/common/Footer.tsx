@@ -122,23 +122,25 @@ export default function Footer() {
               </p>
 
               <div className="mt-6 flex items-center gap-2">
-                <button
-                  type="button"
+                <a
+                  href="https://www.instagram.com/faminagallery/"
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label="اینستاگرام"
-                  onClick={() => console.log("اینستاگرام فامینااسکرف")}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white transition-colors hover:border-[#B8944E] hover:bg-[#B8944E] hover:text-[#173C35]"
                 >
                   <InstagramIcon />
-                </button>
+                </a>
 
-                <button
-                  type="button"
+                <a
+                  href="https://t.me/faminagallery"
+                  target="_blank"
+                  rel="noreferrer"
                   aria-label="تلگرام"
-                  onClick={() => console.log("تلگرام فامینااسکرف")}
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-white/15 text-white transition-colors hover:border-[#B8944E] hover:bg-[#B8944E] hover:text-[#173C35]"
                 >
                   <Send size={17} strokeWidth={1.7} />
-                </button>
+                </a>
 
                 <button
                   type="button"

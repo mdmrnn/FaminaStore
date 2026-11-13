@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 
 const supportEmail = import.meta.env.VITE_CONTACT_EMAIL?.trim() ?? "";
 const supportPhone = import.meta.env.VITE_CONTACT_PHONE?.trim() ?? "";
+const supportInstagram = "https://www.instagram.com/faminagallery/";
+const supportTelegram = "https://t.me/faminagallery";
 
 export default function ContactPage() {
   const [name, setName] = useState("");
@@ -161,19 +163,43 @@ export default function ContactPage() {
               <dl className="mt-3 space-y-2 text-xs leading-6 text-[#71717A]">
                 <div className="flex justify-between gap-3">
                   <dt>شماره تماس</dt>
-                  <dd>{supportPhone || "شماره تماس (جایگزین شود)"}</dd>
+                  <dd>
+                    {supportPhone ? (
+                      <a href={`tel:${supportPhone}`} dir="ltr" className="hover:text-[#173C35]">
+                        {supportPhone}
+                      </a>
+                    ) : (
+                      "شماره تماس (جایگزین شود)"
+                    )}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-3">
                   <dt>ایمیل</dt>
-                  <dd>{supportEmail || "ایمیل پشتیبانی (جایگزین شود)"}</dd>
+                  <dd>
+                    {supportEmail ? (
+                      <a href={`mailto:${supportEmail}`} dir="ltr" className="hover:text-[#173C35]">
+                        {supportEmail}
+                      </a>
+                    ) : (
+                      "ایمیل پشتیبانی (جایگزین شود)"
+                    )}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-3">
                   <dt>اینستاگرام</dt>
-                  <dd dir="ltr">@faminagallery</dd>
+                  <dd dir="ltr">
+                    <a href={supportInstagram} target="_blank" rel="noreferrer" className="hover:text-[#173C35]">
+                      @faminagallery
+                    </a>
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-3">
                   <dt>تلگرام</dt>
-                  <dd dir="ltr">@faminagallery</dd>
+                  <dd dir="ltr">
+                    <a href={supportTelegram} target="_blank" rel="noreferrer" className="hover:text-[#173C35]">
+                      @faminagallery
+                    </a>
+                  </dd>
                 </div>
               </dl>
             </div>
