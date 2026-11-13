@@ -13,6 +13,7 @@ import BrandLogo from "../../features/header/BrandLogo";
 import FooterLink from "../../features/footer/FooterLink";
 import InstagramIcon from "../../assets/icons/components/InstagramIcon";
 import FooterNavBar from "../../features/footer/FooterNavBar";
+import { useNavigate } from "react-router";
 
 const aboutLinks = [
   "درباره فامینااسکرف",
@@ -62,6 +63,21 @@ const valuePropositions = [
 ];
 
 export default function Footer() {
+  const navigate = useNavigate();
+  const enamadBadgeMarkup = `<a
+  referrerpolicy="origin"
+  target="_blank"
+  href="https://trustseal.enamad.ir/?id=8665306&Code=rIFLPyUZ2pLmagIVlgawyVL50wfwN9ed"
+>
+  <img
+    referrerpolicy="origin"
+    src="https://trustseal.enamad.ir/logo.aspx?id=8665306&Code=rIFLPyUZ2pLmagIVlgawyVL50wfwN9ed"
+    alt=""
+    style="cursor:pointer"
+    code="rIFLPyUZ2pLmagIVlgawyVL50wfwN9ed"
+  />
+</a>`;
+
   const handleNewsletter = () => {
     console.log("عضویت در خبرنامه");
   };
@@ -142,7 +158,11 @@ export default function Footer() {
                   <FooterLink
                     key={label}
                     label={label}
-                    onClick={() => console.log(`لینک فوتر: ${label}`)}
+                    onClick={() => {
+                      if (label === aboutLinks[0]) {
+                        navigate("/aboutus");
+                      }
+                    }}
                   />
                 ))}
               </div>
@@ -155,7 +175,11 @@ export default function Footer() {
                   <FooterLink
                     key={label}
                     label={label}
-                    onClick={() => console.log(`لینک فوتر: ${label}`)}
+                    onClick={() => {
+                      if (label === quickLinks[quickLinks.length - 1]) {
+                        navigate("/contactus");
+                      }
+                    }}
                   />
                 ))}
               </div>
@@ -204,6 +228,12 @@ export default function Footer() {
                 <Mail size={14} strokeWidth={1.6} />
                 <span>اطلاعات شما نزد ما محفوظ است.</span>
               </div>
+
+              <div className="mt-2 mr-6 flex [&_img]:block [&_img]:max-h-12 [&_img]:max-w-12 [&_img]:object-contain">
+                <div
+                  dangerouslySetInnerHTML={{ __html: enamadBadgeMarkup }}
+                />
+              </div>
             </div>
           </div>
 
@@ -223,6 +253,13 @@ export default function Footer() {
           </div>
         </section>
       </footer>
+      <section className="flex flex-col items-center gap-1 bg-[#FAF9F5] px-4 pt-3 pb-20 md:hidden">
+        <div className="flex justify-center [&_img]:block [&_img]:max-h-12 [&_img]:max-w-12 [&_img]:object-contain">
+          <div
+            dangerouslySetInnerHTML={{ __html: enamadBadgeMarkup }}
+          />
+        </div>
+      </section>
       <FooterNavBar />
     </>
   );

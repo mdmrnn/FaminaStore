@@ -1,5 +1,8 @@
-import { randomUUID } from "node:crypto";
-import { insertOrder } from "../repositories/orderRepository.js";
+import { createHash, randomUUID } from "node:crypto";
+import {
+  findOrderByIdempotencyKey,
+  insertOrder,
+} from "../repositories/orderRepository.js";
 import { findProductById } from "../repositories/productRepository.js";
 import { normalizeMobileDigits } from "../utils/normalizeMobileDigits.js";
 import { calculateShippingCost } from "./shippingService.js";
@@ -9,7 +12,7 @@ export async function placeOrder({
   items,
   shippingMethod,
   paymentMethod,
-}) {
+}, idempotency) {
   const orderItems = [];
 
   for (const { productId, quantity } of items) {
@@ -62,7 +65,24 @@ export async function placeOrder({
     createdAt: new Date().toISOString(),
   };
 
-  return insertOrder(order);
+  return insertOrder(order, idempotency);
+}
+
+export function createOrderRequestHash(payload) {
+  return createHash("sha256").update(stableStringify(payload)).digest("hex");
+}
+
+export async function findIdempotentOrder(idempotencyKey, requestHash) {
+  const existing = await findOrderByIdempotencyKey(idempotencyKey);
+
+  if (!existing) {
+    return null;
+  }
+
+  return {
+    conflict: existing.requestHash !== requestHash,
+    order: existing.order,
+  };
 }
 
 function normalizeCustomer(customer) {
@@ -76,4 +96,20 @@ function normalizeCustomer(customer) {
       ? { deliveryNote: customer.deliveryNote.trim() }
       : {}),
   };
+}
+
+function stableStringify(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map(stableStringify).join(",")}]`;
+  }
+
+  if (value !== null && typeof value === "object") {
+    const entries = Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${stableStringify(value[key])}`);
+
+    return `{${entries.join(",")}}`;
+  }
+
+  return JSON.stringify(value);
 }

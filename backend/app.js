@@ -49,7 +49,7 @@ app.use(
       callback(null, !origin || allowedOrigins.has(origin));
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    allowedHeaders: ["Content-Type", "Authorization", "Idempotency-Key"],
     maxAge: 600,
   }),
 );

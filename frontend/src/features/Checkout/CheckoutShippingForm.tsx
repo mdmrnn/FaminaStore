@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Check, Truck } from "lucide-react";
 import type { RootState } from "../../store/store";
 
@@ -11,6 +11,40 @@ import {
   type Order,
 } from "../../services/orderApi";
 import { normalizeMobileDigits } from "../../utils/normalizeMobileDigits";
+
+const pendingOrderStorageKey = "faminastore:pending-order";
+
+function readPendingOrderRequest(): { fingerprint: string; key: string } | null {
+  try {
+    const storedRequest = sessionStorage.getItem(pendingOrderStorageKey);
+    if (!storedRequest) return null;
+
+    const parsed: unknown = JSON.parse(storedRequest);
+    if (
+      typeof parsed === "object" &&
+      parsed !== null &&
+      "fingerprint" in parsed &&
+      typeof parsed.fingerprint === "string" &&
+      "key" in parsed &&
+      typeof parsed.key === "string"
+    ) {
+      return { fingerprint: parsed.fingerprint, key: parsed.key };
+    }
+  } catch {
+    return null;
+  }
+
+  return null;
+}
+
+async function fingerprintOrderRequest<T>(request: T): Promise<string> {
+  const requestBytes = new TextEncoder().encode(JSON.stringify(request));
+  const digest = await crypto.subtle.digest("SHA-256", requestBytes);
+
+  return Array.from(new Uint8Array(digest), (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+}
 
 interface CheckoutShippingFormProps {
   formData: CheckoutFormData;
@@ -32,6 +66,9 @@ export default function CheckoutShippingForm({
 }: CheckoutShippingFormProps) {
   const items = useSelector((state: RootState) => state.cart.items);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const orderRequestRef = useRef<{ fingerprint: string; key: string } | null>(
+    null,
+  );
 
   const validateShippingForm = (): boolean => {
     const errors: string[] = [];
@@ -69,7 +106,7 @@ export default function CheckoutShippingForm({
     setIsSubmitting(true);
 
     try {
-      const order = await createOrder({
+      const orderRequest = {
         customer: {
           fullName: formData.fullName,
           mobile: normalizeMobileDigits(formData.mobile),
@@ -84,7 +121,35 @@ export default function CheckoutShippingForm({
         })),
         shippingMethod: formData.shippingMethod,
         paymentMethod: formData.paymentMethod,
-      });
+      };
+      const fingerprint = await fingerprintOrderRequest(orderRequest);
+      const pendingRequest =
+        orderRequestRef.current ?? readPendingOrderRequest();
+      const idempotencyKey =
+        pendingRequest?.fingerprint === fingerprint
+          ? pendingRequest.key
+          : crypto.randomUUID();
+
+      orderRequestRef.current = { fingerprint, key: idempotencyKey };
+      try {
+        sessionStorage.setItem(
+          pendingOrderStorageKey,
+          JSON.stringify({ fingerprint, key: idempotencyKey }),
+        );
+      } catch {
+        // The in-memory key still protects retries if storage is unavailable.
+      }
+
+      const order = await createOrder(orderRequest, idempotencyKey);
+      orderRequestRef.current = null;
+      try {
+        const savedRequest = readPendingOrderRequest();
+        if (savedRequest?.key === idempotencyKey) {
+          sessionStorage.removeItem(pendingOrderStorageKey);
+        }
+      } catch {
+        // A storage cleanup failure must not turn a successful order into an error.
+      }
 
       if (order.paymentMethod === "zarinpal") {
         try {

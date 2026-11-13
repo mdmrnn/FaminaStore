@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 
+import { addToCart } from "../../store/cartSlice.ts";
 import { fetchProducts } from "../../store/productsSlice.ts";
 import type { AppDispatch, RootState } from "../../store/store.ts";
 import { toPersianDigits, formatPrice } from "../../utils/formatNumber.ts";
@@ -88,7 +89,7 @@ export default function SpecialOffers() {
                   aria-label="افزودن به سبد خرید"
                   onClick={(event) => {
                     event.stopPropagation();
-                    console.log(`افزودن به سبد خرید: ${product.name}`);
+                    dispatch(addToCart(product));
                   }}
                   className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#173C35] text-white transition-transform duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-[#B8944E] focus:ring-offset-2 sm:h-9 sm:w-9"
                 >

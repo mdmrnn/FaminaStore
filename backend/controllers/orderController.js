@@ -1,4 +1,8 @@
-import { placeOrder } from "../services/orderService.js";
+import {
+  createOrderRequestHash,
+  findIdempotentOrder,
+  placeOrder,
+} from "../services/orderService.js";
 import {
   getOrderPaymentSummary,
   PaymentFlowError,
@@ -8,7 +12,34 @@ import {
 import { validateOrderRequest } from "../validators/orderValidator.js";
 
 export async function createOrder(req, res) {
+  const idempotencyKey = req.get("Idempotency-Key")?.trim() ?? "";
+
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(idempotencyKey)) {
+    return res.status(400).json({
+      success: false,
+      message: "کلید یکتای ثبت سفارش معتبر نیست. دوباره تلاش کنید.",
+    });
+  }
+
   try {
+    const requestHash = createOrderRequestHash(req.body ?? {});
+    const existing = await findIdempotentOrder(idempotencyKey, requestHash);
+
+    if (existing?.conflict) {
+      return res.status(409).json({
+        success: false,
+        message: "این درخواست قبلاً با اطلاعات دیگری استفاده شده است.",
+      });
+    }
+
+    if (existing) {
+      return res.status(200).json({
+        success: true,
+        message: "سفارش قبلی بازیابی شد.",
+        order: existing.order,
+      });
+    }
+
     const validation = await validateOrderRequest(req.body ?? {});
 
     if (!validation.valid) {
@@ -19,12 +50,24 @@ export async function createOrder(req, res) {
       });
     }
 
-    const order = await placeOrder(validation.data);
+    const result = await placeOrder(validation.data, {
+      idempotencyKey,
+      requestHash,
+    });
 
-    return res.status(201).json({
+    if (result.conflict) {
+      return res.status(409).json({
+        success: false,
+        message: "این درخواست قبلاً با اطلاعات دیگری استفاده شده است.",
+      });
+    }
+
+    return res.status(result.created ? 201 : 200).json({
       success: true,
-      message: "سفارش با موفقیت ثبت شد.",
-      order,
+      message: result.created
+        ? "سفارش با موفقیت ثبت شد."
+        : "سفارش قبلی بازیابی شد.",
+      order: result.order,
     });
   } catch (error) {
     console.error("Order creation failed:", error.message);

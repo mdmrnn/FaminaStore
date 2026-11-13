@@ -6,10 +6,10 @@ const PORT = Number.parseInt(process.env.PORT ?? "5000", 10);
 
 if (
   process.env.NODE_ENV === "production" &&
-  (!process.env.ADMIN_USERNAME || (process.env.ADMIN_PASSWORD?.length ?? 0) < 24)
+  (!process.env.ADMIN_USERNAME || (process.env.ADMIN_PASSWORD?.length ?? 0) < 4)
 ) {
   throw new Error(
-    "Production requires ADMIN_USERNAME and an ADMIN_PASSWORD of at least 24 characters.",
+    "Production requires ADMIN_USERNAME and an ADMIN_PASSWORD of at least 4 characters.",
   );
 }
 

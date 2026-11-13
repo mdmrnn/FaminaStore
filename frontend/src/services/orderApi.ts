@@ -66,6 +66,7 @@ interface CreateOrderResponse {
 
 export async function createOrder(
   request: CreateOrderRequest,
+  idempotencyKey: string,
 ): Promise<Order> {
   let response: Response;
 
@@ -74,6 +75,7 @@ export async function createOrder(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        "Idempotency-Key": idempotencyKey,
       },
       body: JSON.stringify(request),
     });

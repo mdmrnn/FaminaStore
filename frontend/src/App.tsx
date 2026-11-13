@@ -12,6 +12,8 @@ import "./App.css";
 import OrderSuccessPage from "./pages/OrderSuccessPage";
 import AdminPage from "./pages/AdminPage";
 import AdminOrdersPage from "./pages/AdminOrdersPage";
+import AboutPage from "./pages/AboutPage";
+import ContactPage from "./pages/ContactPage";
 
 export default function App() {
   return (
@@ -25,6 +27,8 @@ export default function App() {
         <Route path="/order-success" element={<OrderSuccessPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/profile" element={<ProfilePage />} />
+        <Route path="/aboutus" element={<AboutPage />} />
+        <Route path="/contactus" element={<ContactPage />} />
       </Route>
       <Route path="/admin" element={<AdminPage />} />
       <Route path="/admin/orders" element={<AdminOrdersPage />} />

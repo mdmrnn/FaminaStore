@@ -76,6 +76,21 @@ export async function findRecentOrders(limit = 100) {
   }));
 }
 
+export async function findOrderByIdempotencyKey(idempotencyKey) {
+  const result = await db.query(
+    "SELECT id, request_hash FROM orders WHERE idempotency_key = $1",
+    [idempotencyKey],
+  );
+  const savedRequest = result.rows[0];
+
+  if (!savedRequest) {
+    return null;
+  }
+
+  const order = await findOrderById(savedRequest.id, db);
+  return order ? { order, requestHash: savedRequest.request_hash } : null;
+}
+
 export async function findOrderState(orderId) {
   const result = await db.query(
     "SELECT status, payment_status FROM orders WHERE id = $1",
@@ -110,12 +125,12 @@ export async function markOrderPaid(orderId) {
   return result.rowCount === 1;
 }
 
-export async function insertOrder(order) {
+export async function insertOrder(order, { idempotencyKey, requestHash }) {
   const client = await db.connect();
 
   try {
     await client.query("BEGIN");
-    await client.query(
+    const orderResult = await client.query(
       `
         INSERT INTO orders (
           id,
@@ -131,8 +146,12 @@ export async function insertOrder(order) {
           shipping_cost,
           total,
           status,
-          created_at
-        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+          created_at,
+          idempotency_key,
+          request_hash
+        ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+        ON CONFLICT (idempotency_key) DO NOTHING
+        RETURNING id
       `,
       [
         order.id,
@@ -149,8 +168,36 @@ export async function insertOrder(order) {
         order.total,
         order.status,
         order.createdAt,
+        idempotencyKey,
+        requestHash,
       ],
     );
+
+    if (orderResult.rowCount === 0) {
+      const existingResult = await client.query(
+        `
+          SELECT id, request_hash
+          FROM orders
+          WHERE idempotency_key = $1
+          FOR UPDATE
+        `,
+        [idempotencyKey],
+      );
+      const existing = existingResult.rows[0];
+
+      if (!existing) {
+        throw new Error("The idempotent order could not be loaded.");
+      }
+
+      const existingOrder = await findOrderById(existing.id, client);
+      await client.query("COMMIT");
+
+      if (existing.request_hash !== requestHash) {
+        return { created: false, conflict: true };
+      }
+
+      return { created: false, conflict: false, order: existingOrder };
+    }
 
     for (const item of order.items) {
       await client.query(
@@ -176,13 +223,81 @@ export async function insertOrder(order) {
     }
 
     await client.query("COMMIT");
-    return order;
+    return { created: true, conflict: false, order };
   } catch (error) {
     await client.query("ROLLBACK").catch(() => {});
     throw error;
   } finally {
     client.release();
   }
+}
+
+async function findOrderById(orderId, queryable) {
+  const orderResult = await queryable.query(
+    `
+      SELECT
+        id,
+        full_name,
+        mobile,
+        province,
+        city,
+        address,
+        delivery_note,
+        shipping_method,
+        payment_method,
+        payment_status,
+        subtotal,
+        shipping_cost,
+        total,
+        status,
+        created_at
+      FROM orders
+      WHERE id = $1
+    `,
+    [orderId],
+  );
+  const order = orderResult.rows[0];
+
+  if (!order) {
+    return null;
+  }
+
+  const itemResult = await queryable.query(
+    `
+      SELECT product_id, product_name, quantity, unit_price, total_price
+      FROM order_items
+      WHERE order_id = $1
+      ORDER BY id
+    `,
+    [orderId],
+  );
+
+  return {
+    id: order.id,
+    customer: {
+      fullName: order.full_name,
+      mobile: order.mobile,
+      province: order.province,
+      city: order.city,
+      address: order.address,
+      ...(order.delivery_note ? { deliveryNote: order.delivery_note } : {}),
+    },
+    items: itemResult.rows.map((item) => ({
+      productId: item.product_id,
+      name: item.product_name,
+      quantity: item.quantity,
+      unitPrice: toSafeInteger(item.unit_price, "Order item unit price"),
+      totalPrice: toSafeInteger(item.total_price, "Order item total price"),
+    })),
+    shippingMethod: order.shipping_method,
+    paymentMethod: order.payment_method,
+    paymentStatus: order.payment_status,
+    subtotal: toSafeInteger(order.subtotal, "Order subtotal"),
+    shippingCost: toSafeInteger(order.shipping_cost, "Order shipping cost"),
+    total: toSafeInteger(order.total, "Order total"),
+    status: order.status,
+    createdAt: order.created_at,
+  };
 }
 
 function toSafeInteger(value, label) {
