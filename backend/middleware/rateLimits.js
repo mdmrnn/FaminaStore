@@ -9,6 +9,15 @@ export const adminLoginLimiter = rateLimit({
   message: { error: "تعداد تلاش‌های ورود بیش از حد مجاز است." },
 });
 
+export const customerAuthLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  skipSuccessfulRequests: true,
+  message: { error: "تعداد تلاش‌های ورود بیش از حد مجاز است." },
+});
+
 export const createOrderLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 10,

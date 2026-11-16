@@ -5,7 +5,9 @@ import helmet from "helmet";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { uploadsDirectory } from "./config/paths.js";
+import { allowedOrigins } from "./config/corsOrigins.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import customerAuthRoutes from "./routes/customerAuthRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import productRoutes from "./routes/productRoutes.js";
@@ -13,24 +15,6 @@ import productRoutes from "./routes/productRoutes.js";
 const app = express();
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const defaultDevelopmentOrigins = [
-  "http://localhost:5173",
-  "http://127.0.0.1:5173",
-];
-const configuredOrigins = (process.env.CORS_ORIGINS ?? "")
-  .split(",")
-  .map((origin) => origin.trim())
-  .filter(Boolean);
-
-if (process.env.NODE_ENV === "production" && configuredOrigins.length === 0) {
-  throw new Error("Set CORS_ORIGINS to the deployed storefront origin.");
-}
-
-const allowedOrigins = new Set(
-  configuredOrigins.length > 0
-    ? configuredOrigins
-    : defaultDevelopmentOrigins,
-);
 const trustProxyHops = Number.parseInt(process.env.TRUST_PROXY_HOPS ?? "0", 10);
 
 if (!Number.isInteger(trustProxyHops) || trustProxyHops < 0) {
@@ -50,10 +34,12 @@ app.use(
     },
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization", "Idempotency-Key"],
+    credentials: true,
     maxAge: 600,
   }),
 );
 
+app.use("/api/auth", express.json({ limit: "16kb" }), customerAuthRoutes);
 app.use("/api/products", productRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/admin", express.json({ limit: "16kb" }), adminRoutes);
